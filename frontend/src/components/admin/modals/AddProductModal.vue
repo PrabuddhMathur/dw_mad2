@@ -1,5 +1,5 @@
 <template>
-    <div class="modal fade" :id="category.cid + 'AddProductModal'">
+    <div class="modal fade" :id="this.category_id +'AddProductModal'">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
@@ -52,10 +52,10 @@
 import axios from 'axios';
     export default {
         props: {
-            category:{
-                type: Object,
+            category_id:{
+                type: Number,
                 required: true
             }
         }
-    }
+}
 </script>
