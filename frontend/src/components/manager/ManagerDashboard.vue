@@ -2,20 +2,20 @@
     <div>
         <Navbar />
             <!-- Button trigger modal -->
-        <div class="text-center my-4" >
+        <!-- <div class="text-center my-4" >
             <button type="button" class="btn btn-dark" data-bs-toggle="modal" data-bs-target="#AddCategoryModal"><i class="fa fa-plus"></i> Add Category</button>
         </div>
-        <AddCategoryModal />
+        <AddCategoryModal /> -->
 
         <div v-if="categories.length > 0" class="container mb-4">
             <div v-for="category in categories" :key="category">
                 <div  class="row">
                     <h5 class="col-3" style="margin-top: 6px; font-family: 'Bangers';font-size: 28px;">{{ category.cname }}</h5>
-                    <div class="d-flex col-2 align-items-center">
+                    <!-- <div class="d-flex col-2 align-items-center">
                         <button class="btn btn-dark mx-2" type="button" data-bs-toggle="modal" :data-bs-target="'#'+ category.cid + 'EditCategoryModal'"><i class="fa-solid fa-pen"></i></button>
                         <EditCategoryModal :category="category" />
                         <a :href="'/delete/category/'+category.cid" class="btn btn-danger" type="submit"><i class="fa-solid fa-trash-can"></i></a>
-                    </div>
+                    </div> -->
                     <div class="d-flex col-7 align-items-center">
                         <button class="btn btn-dark ms-auto" type="button" data-bs-toggle="modal" :data-bs-target="'#'+ category.cid +'AddProductModal'"><i class="fa-solid fa-circle-plus"></i> Add Product</button>
                     </div>
@@ -33,10 +33,10 @@
                             Rate: Rs. {{ product.rateperunit }}
                         </div>
                         <div class="card-footer d-flex justify-content-center">                    
-                            <button class="btn btn-outline-dark btn-sm mx-2" type="button" data-bs-toggle="modal" data-bs-target="#{{ product.pid }}EditProductModal"><i class="fa-solid fa-pen"></i></button>
+                            <button class="btn btn-outline-dark btn-sm mx-2" type="button" data-bs-toggle="modal" :data-bs-target="'#'+ product.pid + 'EditProductModal'"><i class="fa-solid fa-pen"></i></button>
                             <!-- EditProductModal -->
-                            <EditProductModal />
-                            <a href="/delete/product/{{ product.pid }}" class="btn btn-outline-danger btn-sm" type="submit"><i class="fa-solid fa-trash-can"></i></a>                    
+                            <EditProductModal :product="product" />
+                            <a :href="'/delete/product/'+ product.pid" class="btn btn-outline-danger btn-sm" type="submit"><i class="fa-solid fa-trash-can"></i></a>                    
                         </div>
                         </div>
                     </div>
@@ -56,20 +56,16 @@
 
 <script>
 import Navbar from './Navbar.vue';
-import AddCategoryModal from './modals/AddCategoryModal.vue';
 import AddProductModal from './modals/AddProductModal.vue';
-import EditProductModal from './modals/AddProductModal.vue';
-import EditCategoryModal from './modals/EditCategoryModal.vue';
+import EditProductModal from './modals/EditProductModal.vue';
 import axios from "axios";
 
 
 export default {
     components: {
         Navbar,
-        AddCategoryModal,
         AddProductModal,
-        EditProductModal,
-        EditCategoryModal
+        EditProductModal
     },
     data() {
         return {
@@ -97,7 +93,7 @@ export default {
         await this.fetchCategories();
     },
     mounted() {
-		document.title = "Admin Dashboard";
+		document.title = "Manager Dashboard";
 	}
 }
 </script>

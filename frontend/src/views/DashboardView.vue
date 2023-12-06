@@ -1,13 +1,16 @@
 <template>
-    <Dashboard />
+    <ManagerDashboard />
 </template>
 
 <script>
-import Dashboard from '../components/admin/Dashboard.vue';
-
+import AdminDashboard from '../components/admin/AdminDashboard.vue';
+import ManagerDashboard from '../components/manager/ManagerDashboard.vue';
+import UserDashboard from '../components/user/UserDashboard.vue';  
 export default {
     components: {
-        Dashboard
+        AdminDashboard,
+        ManagerDashboard,
+        UserDashboard
     },
 }
 </script>
