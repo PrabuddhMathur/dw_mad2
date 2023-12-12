@@ -28,9 +28,14 @@ def register():
         role = data["role"]
 
         if get_user_by_username(username):
-            return {"message":"Username already exists"}
+            return {"Error" : 401, "message":"Username already exists"}
         
-        user = User(fname=fname, lname=lname,username=username,password=passhash.hash(password),role=role)
+        if role == "user":
+            approved=True
+        else:
+            approved=False
+
+        user = User(fname=fname, lname=lname,username=username,password=passhash.hash(password),role=role,approved=approved)
         db.session.add(user)
         db.session.commit()
 
@@ -59,8 +64,9 @@ def login():
         password = data["password"]
 
         user = get_user_by_username(username)
+        # print(user)
         if not user:
-            return {"message":"Username does not exist"}
+            return {"Error" : 404,"message":"Username does not exist"}
         
         if passhash.verify(password, user.password):
             token = get_token_by_user_id(user.id)
@@ -70,7 +76,7 @@ def login():
             db.session.commit()
             return {"token": encoded, "expiry": expiry_time}
         else:
-            return {"message":"Incorrect password"}
+            return {"Error":404,"message":"Incorrect password"}
 
 
 

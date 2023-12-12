@@ -40,7 +40,7 @@ def get_user_by_username(username):
 
 @cache.memoize()
 def get_token_by_user_id(user_id):
-    token = Token.query.filter_by(user_id=user_id).first()
+    token = Token.query.filter_by(user_id=user_id).first().token
     return token
 
 @cache.memoize()

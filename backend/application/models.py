@@ -2,14 +2,14 @@ from .database import *
 
 class User(db.Model):
     __tablename__ = "users"
-    id = db.Column(db.Integer, primary_key = True)
+    id = db.Column(db.Integer, autoincrement=True, primary_key = True)
     fname = db.Column(db.String(150))
     lname = db.Column(db.String(150))
     username = db.Column(db.String(150), unique = True)
     password = db.Column(db.String(150))
     role = db.Column(db.String(10), nullable=False)
     items = db.relationship("Booking", backref = "user")
-    # visited=db.Column(db.Boolean, default=False)
+    approved=db.Column(db.Boolean, default=False)
 
 
 class Product(db.Model):
@@ -35,7 +35,20 @@ class Product(db.Model):
             "quantity":self.quantity,
             "bookings":[booking.to_dict() for booking in self.bookings]
         }
-        
+
+class ApproveCategory(db.Model):
+    __tablename__ = "approvecategories"
+    id = db.Column(db.Integer, primary_key = True)
+    category_id = db.Column(db.Integer, db.ForeignKey("categories.cid", ondelete = "CASCADE"))
+    cname = db.Column(db.String(150), unique=True)
+
+    def to_dict(self):
+        return {
+            "id":self.id,
+            "category_id":self.category_id,
+            "cname":self.cname
+        }
+   
 class Category(db.Model):
     __tablename__ = "categories"
     cid = db.Column(db.Integer, primary_key = True)
@@ -48,7 +61,6 @@ class Category(db.Model):
             "cname":self.cname,
             "products":[product.to_dict() for product in self.products]
         }
-
 
 
 class Booking(db.Model):

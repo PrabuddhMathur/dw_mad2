@@ -26,10 +26,12 @@ def create_app():
         username = 'admin'
         password = '1234'
         role='admin'
-        admin_user=User(fname=fname, lname=lname,username=username,password=passhash.hash(password),role=role)
+        approved=True
+
+        admin_user=User(fname=fname, lname=lname,username=username,password=passhash.hash(password),role=role,approved=approved)
+
         db.session.add(admin_user)
-        db.session.flush()
-        db.session.refresh(admin_user)
+        db.session.commit()
 
         token = Token(user_id=admin_user.id, token=secrets.token_urlsafe(32))
 
