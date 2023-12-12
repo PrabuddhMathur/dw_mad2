@@ -4,7 +4,7 @@ from passlib.hash import pbkdf2_sha256 as passhash
 from application.database import db
 from application.models import *
 from flask_cors import CORS
-
+import secrets
 
 app=None
 
@@ -17,9 +17,26 @@ def create_app():
     db.init_app(app)
     app.app_context().push()
     
-    # db.create_all()
+    db.create_all()
 
-    # app.app_context().push()
+    admin_user = User.query.filter_by(role='admin').first()
+    if not admin_user:
+        fname='The'
+        lname='Admin'
+        username = 'admin'
+        password = '1234'
+        role='admin'
+        admin_user=User(fname=fname, lname=lname,username=username,password=passhash.hash(password),role=role)
+        db.session.add(admin_user)
+        db.session.flush()
+        db.session.refresh(admin_user)
+
+        token = Token(user_id=admin_user.id, token=secrets.token_urlsafe(32))
+
+        db.session.add(token)
+        db.session.commit()
+
+    app.app_context().push()
     return app
 
 app = create_app()

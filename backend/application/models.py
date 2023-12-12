@@ -9,6 +9,7 @@ class User(db.Model):
     password = db.Column(db.String(150))
     role = db.Column(db.String(10), nullable=False)
     items = db.relationship("Booking", backref = "user")
+    # visited=db.Column(db.Boolean, default=False)
 
 
 class Product(db.Model):
@@ -88,3 +89,12 @@ class Order(db.Model):
             "product_unit":self.product_unit,
             "product_name":self.product_name
         }
+
+class Token(db.Model):
+    __tablename__ = "token"
+    user_id = db.Column(db.Integer, primary_key=True, nullable=False)
+    token = db.Column(db.String, nullable=False, unique=True)
+
+class Visited(db.Model):
+    user_id=db.Column(db.Integer, primary_key=True, nullable=False)
+    status=db.Column(db.Boolean, nullable=False, default=False)

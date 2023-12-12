@@ -6,7 +6,7 @@ import CartView from '../views/CartView.vue'
 import AdminSummaryView from '../views/AdminSummaryView.vue'
 import OrdersView from '../views/OrdersView.vue'
 import SearchView from '../views/SearchView.vue'
-
+import AdminApprovalView from '../views/AdminApprovalView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -45,6 +45,11 @@ const router = createRouter({
       path: '/search',
       name: 'search',
       component: SearchView
+    },
+    {
+      path: '/approve',
+      name: 'approve',
+      component: AdminApprovalView
     }
   ]
 })

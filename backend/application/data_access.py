@@ -32,3 +32,18 @@ def get_user_bookings(user_id):
 def get_user_orders(user_id):
     orders = Order.query.filter_by(userid=user_id).all()
     return [order.to_dict() for order in orders]
+
+@cache.memoize()
+def get_user_by_username(username):
+    user = User.query.filter_by(username=username).first()
+    return user
+
+@cache.memoize()
+def get_token_by_user_id(user_id):
+    token = Token.query.filter_by(user_id=user_id).first()
+    return token
+
+@cache.memoize()
+def get_status(user_id):
+    visited=Visited.query.filter_by(user_id=user_id).first()
+    return visited
