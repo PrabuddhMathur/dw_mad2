@@ -24,7 +24,6 @@
             
                     <div class="form-group text-center"><button type="submit" class="btn btn-dark">Login</button></div>
                     <br><br>Haven't registered yet? <a href="/register">Sign Up!</a>
-                    <!-- <br><br>Signing In as Manager?<a type="button" href="/admin_login">Admin Login</a> -->
                 </form>            
             </div>
         </div>
@@ -63,11 +62,12 @@ export default {
 				.then((response) => {
 				this.token = response.token
 				this.expiry = response.expiry
+                this.role = response.role
 				this.userSession = {
 				token: this.token,
 				expiry: this.expiry,
+                role:this.role,
 				};
-				// console.log(this.userSession)
 				localStorage.setItem("userSession", JSON.stringify(this.userSession));
 				location.href="/dashboard"
 				
@@ -83,7 +83,7 @@ export default {
 
 </script>
 
-<style>
+<!-- <style scoped>
 
         body {
             background-image: url("../static/grocillabg.avif");
@@ -95,4 +95,4 @@ export default {
             /* opacity: 1;
             transition: opacity 1s; */
             }
-</style>
+</style> -->

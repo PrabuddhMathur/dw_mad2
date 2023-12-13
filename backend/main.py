@@ -29,7 +29,9 @@ def create_app():
         approved=True
 
         admin_user=User(fname=fname, lname=lname,username=username,password=passhash.hash(password),role=role,approved=approved)
-
+        status=Visited(user_id=admin_user.id, status=True)
+        
+        db.session.add(status)
         db.session.add(admin_user)
         db.session.commit()
 

@@ -54,7 +54,7 @@ def register():
         encoded = jwt.encode({"token": token}, app.secret_key)
         expiry_time = datetime.datetime.utcnow() + datetime.timedelta(days=30)
 
-        return {"token": encoded, "expiry": expiry_time}
+        return {"token": encoded, "expiry": expiry_time, "role":user.role}
 
 @app.route("/api/login", methods = ["POST"])
 def login():
@@ -64,19 +64,22 @@ def login():
         password = data["password"]
 
         user = get_user_by_username(username)
-        # print(user)
         if not user:
             return {"Error" : 404,"message":"Username does not exist"}
         
-        if passhash.verify(password, user.password):
+        if not passhash.verify(password,user.password):
+            return {"Error" : 401, "message": "Invalid Password"}
+    
+        if user.approved:
             token = get_token_by_user_id(user.id)
             encoded = jwt.encode({"token": token}, app.secret_key)
             expiry_time = datetime.datetime.utcnow() + datetime.timedelta(days=30)
             get_status(user.id).status=True
             db.session.commit()
-            return {"token": encoded, "expiry": expiry_time}
+        
+            return {"token": encoded, "expiry": expiry_time,"role":user.role}
         else:
-            return {"Error":404,"message":"Incorrect password"}
+            return {"Error":404,"message":"Admin has not approved your account yet. Please try again later."}
 
 
 

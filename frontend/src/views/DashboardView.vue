@@ -12,5 +12,11 @@ export default {
         ManagerDashboard,
         UserDashboard
     },
+    data() {
+        return {
+            userSession: JSON.parse(localStorage.getItem("userSession")) || null,
+            
+        };
+    },
 }
 </script>

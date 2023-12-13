@@ -1,5 +1,4 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import DashboardView from '../views/DashboardView.vue'
 import LoginView from '../views/LoginView.vue'
 import RegisterView from '../views/RegisterView.vue'
 import CartView from '../views/CartView.vue'
@@ -12,9 +11,43 @@ const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
+      path: '/',
+      redirect: '/login'
+    },
+    {
       path: '/dashboard',
       name: 'dashboard',
-      component: DashboardView
+      component: () => import('../views/DashboardView.vue'),
+      beforeEnter: (to, from, next) => {
+        const userSession = JSON.parse(localStorage.getItem("userSession"));
+      
+        console.log("User Session:", userSession);
+      
+        if (!userSession || !userSession.role) {
+          console.log("No session or role, redirecting to login");
+          next('/login');
+        } else {
+          if (userSession.role === 'admin') {
+            console.log("Loading AdminDashboard.vue");
+            import('../components/admin/AdminDashboard.vue').then(module => {
+              to.matched[0].components = { default: module.default };
+              next();
+            });
+          } else if (userSession.role === 'manager') {
+            console.log("Loading ManagerDashboard.vue");
+            import('../components/manager/ManagerDashboard.vue').then(module => {
+              to.matched[0].components = { default: module.default };
+              next();
+            });
+          } else {
+            console.log("Loading UserDashboard.vue");
+            import('../components/user/UserDashboard.vue').then(module => {
+              to.matched[0].components = { default: module.default };
+              next();
+            });
+          }
+        }
+      }      
     },
     {
       path: '/login',
@@ -50,6 +83,14 @@ const router = createRouter({
       path: '/approve',
       name: 'approve',
       component: AdminApprovalView
+    },
+    {
+      path: '/logout',
+      name: 'logout',
+      beforeEnter: (to, from, next) => {
+        localStorage.removeItem("userSession");
+        next('/login');
+      }
     }
   ]
 })
