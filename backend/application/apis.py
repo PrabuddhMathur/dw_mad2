@@ -54,7 +54,7 @@ def register():
         encoded = jwt.encode({"token": token}, app.secret_key)
         expiry_time = datetime.datetime.utcnow() + datetime.timedelta(days=30)
 
-        return {"token": encoded, "expiry": expiry_time, "role":user.role}
+        return {"token": encoded, "expiry": expiry_time}
 
 @app.route("/api/login", methods = ["POST"])
 def login():
@@ -77,11 +77,18 @@ def login():
             get_status(user.id).status=True
             db.session.commit()
         
-            return {"token": encoded, "expiry": expiry_time,"role":user.role}
+            return {"token": encoded, "expiry": expiry_time}
         else:
             return {"Error":404,"message":"Admin has not approved your account yet. Please try again later."}
 
-
+@app.route("/api/role")
+def role():
+    token=request.headers.get("Authorization", "").split(" ")[-1]
+    decodedToken=jwt.decode(token,app.secret_key,algorithms=["HS256"])
+    user_id=get_user_id_by_token(decodedToken['token'])
+    role=get_user_by_id(user_id).role
+    return {"role":role}
+       
 
 # @app.route("/api/bookings", methods = ["GET", "POST"])
 # def getBookings():

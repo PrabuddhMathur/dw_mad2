@@ -62,11 +62,9 @@ export default {
 				.then((response) => {
 				this.token = response.token
 				this.expiry = response.expiry
-                this.role = response.role
 				this.userSession = {
 				token: this.token,
 				expiry: this.expiry,
-                role:this.role,
 				};
 				localStorage.setItem("userSession", JSON.stringify(this.userSession));
 				location.href="/dashboard"

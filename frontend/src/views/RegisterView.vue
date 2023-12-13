@@ -85,7 +85,6 @@ export default {
         async register() {
             if (this.password != this.password2) {
                 alert("Passwords do not match!");
-                // return;
             }
             await axios
             .post("http://127.0.0.1:1430/api/register", {
@@ -105,11 +104,9 @@ export default {
             .then((response) => {
 					this.token = response.token
 					this.expiry = response.expiry
-                    this.role = response.role
 					this.userSession = {
 					token: this.token,
 					expiry: this.expiry,
-                    role:this.role,
 					};
 					localStorage.setItem("userSession", JSON.stringify(this.userSession));
 					location.href="/login"

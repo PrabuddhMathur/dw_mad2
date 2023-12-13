@@ -6,13 +6,14 @@ import AdminSummaryView from '../views/AdminSummaryView.vue'
 import OrdersView from '../views/OrdersView.vue'
 import SearchView from '../views/SearchView.vue'
 import AdminApprovalView from '../views/AdminApprovalView.vue'
+import axios from 'axios';
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
       path: '/',
-      redirect: '/login'
+      redirect: '/dashboard'
     },
     {
       path: '/dashboard',
@@ -20,33 +21,51 @@ const router = createRouter({
       component: () => import('../views/DashboardView.vue'),
       beforeEnter: (to, from, next) => {
         const userSession = JSON.parse(localStorage.getItem("userSession"));
-      
         console.log("User Session:", userSession);
-      
-        if (!userSession || !userSession.role) {
+
+        if (userSession) {
+          axios.defaults.headers.common["Authorization"] = `Bearer ${userSession.token}`;
+          try {
+            axios
+            .get('http://localhost:1430/api/role')
+            .then((response)=>response)
+            .then((response)=>response.data)
+            .then((response)=>{
+
+              const role=response['role'];
+
+              if (role === 'admin') {
+                console.log("Loading AdminDashboard.vue");
+                import('../components/admin/AdminDashboard.vue').then(module => {
+                  to.matched[0].components = { default: module.default };
+                  next();
+                });
+              } else if (role === 'manager') {
+                console.log("Loading ManagerDashboard.vue");
+                import('../components/manager/ManagerDashboard.vue').then(module => {
+                  to.matched[0].components = { default: module.default };
+                  next();
+                });
+              } else {
+                console.log("Loading UserDashboard.vue");
+                import('../components/user/UserDashboard.vue').then(module => {
+                  to.matched[0].components = { default: module.default };
+                  next();
+                });
+              }
+            
+            })
+            
+            } catch (error) {
+            console.error("Error fetching role:", error);
+            }
+        }
+        else {
           console.log("No session or role, redirecting to login");
           next('/login');
-        } else {
-          if (userSession.role === 'admin') {
-            console.log("Loading AdminDashboard.vue");
-            import('../components/admin/AdminDashboard.vue').then(module => {
-              to.matched[0].components = { default: module.default };
-              next();
-            });
-          } else if (userSession.role === 'manager') {
-            console.log("Loading ManagerDashboard.vue");
-            import('../components/manager/ManagerDashboard.vue').then(module => {
-              to.matched[0].components = { default: module.default };
-              next();
-            });
-          } else {
-            console.log("Loading UserDashboard.vue");
-            import('../components/user/UserDashboard.vue').then(module => {
-              to.matched[0].components = { default: module.default };
-              next();
-            });
-          }
         }
+
+        
       }      
     },
     {

@@ -39,9 +39,19 @@ def get_user_by_username(username):
     return user
 
 @cache.memoize()
+def get_user_by_id(user_id):
+    user = User.query.filter_by(id=user_id).first()
+    return user
+
+@cache.memoize()
 def get_token_by_user_id(user_id):
     token = Token.query.filter_by(user_id=user_id).first().token
     return token
+
+@cache.memoize()
+def get_user_id_by_token(token):
+    user_id = Token.query.filter_by(token=token).first().user_id
+    return user_id
 
 @cache.memoize()
 def get_status(user_id):
