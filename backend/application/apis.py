@@ -25,6 +25,22 @@ def getProducts():
         products=get_all_products()
         return [product.to_dict() for product in products]
 
+@app.route("/admin-api/category/<int:cid>", methods = ["POST", "DELETE"])
+def getCategory(cid):
+    new_category=get_category_by_id(cid)
+    if request.method=="POST":
+        data = request.get_json()
+        new_cname=data["cname"]
+        new_category.cname=new_cname
+        db.session.commit()
+        cache.clear()
+        return f"Updation for {new_category.cname} successful!"
+    else:
+        db.session.delete(get_category_by_id(cid))
+        db.session.commit()
+        cache.clear()
+        return "Deletion successful!"
+
 @app.route("/api/register", methods = ["POST"])
 def register():
     if request.method == "POST":
@@ -97,13 +113,17 @@ def role():
     role=get_user_by_id(user_id).role
     return {"role":role}
        
-@app.route("/api/approval/users",methods=["GET","DELETE"])
+@app.route("/admin-api/approval/users")
 def user_approvals():
-    if request.method == "GET":
-        users=get_user_approval(False)
-        return users
+    users=get_user_approval(False)
+    return users
 
-@app.route("/api/approval/user/<int:user_id>", methods=["GET","DELETE"])
+@app.route("/admin-api/approval/categories")
+def categories_approval():
+    updated_categories=get_category_approval()        
+    return updated_categories
+
+@app.route("/admin-api/approval/user/<int:user_id>", methods=["GET","DELETE"])
 def userid_approved(user_id):
     if request.method=="GET":
 
@@ -121,56 +141,70 @@ def userid_approved(user_id):
         cache.clear()
         return f'Manager {user.username} request deleted!'
     
-@app.route("/api/approval/categories",methods=["GET","DELETE"])
-def categories_approval():
-    if request.method == "GET":
-        cache.clear()
-        updated_categories=get_category_approval()        
-        return updated_categories
-    
-@app.route("/api/approval/category/<int:approval_id>",methods=["GET","DELETE"])
+@app.route("/admin-api/approval/category/<int:approval_id>",methods=["GET","DELETE"])
 def approvalid_approved(approval_id):
     category=get_category_approval_by_id(approval_id)
     if request.method=="GET":
         if category.request_type=="add":
             new_category=Category(cname=category.cname)
             db.session.add(new_category)
+            db.session.delete(category)
             db.session.commit()
             cache.clear()
-            return f"Addiition request for {category.cname} category approved!"
+            return f"Addition request for {category.cname} category approved!"
         elif category.request_type=="edit":
             updated_category=get_category_by_id(cid=category.category_id)
             updated_category.cname = category.cname
+            db.session.delete(category)
             db.session.commit()
             cache.clear()
             return f"Updation request for {category.cname} category approved!"
-        else:
+        elif category.request_type=="delete":
             db.session.delete(get_category_by_id(category.category_id))
+            db.session.delete(category)
             db.session.commit()
             cache.clear()
             return f"Deletion request for {category.cname} category approved!"
     else:
         db.session.delete(category)
+        db.session.commit()
         return "Request declined!"
 
-@app.route("/api/category/<int:cid>", methods = ["POST", "DELETE"])
-def getCategory(cid):
-    new_category=get_category_by_id(cid)
+@app.route("/manager-api/approval/category",methods=["POST"])
+def manager_category():
     if request.method=="POST":
-        cache.clear()
         data = request.get_json()
-        new_cname=data["cname"]
-        new_category.cname=new_cname
-        db.session.commit()
-        cache.clear()
-        return f"Updation for {new_category.cname} successful!"
-    else:
-        cache.clear()
-        db.session.delete(get_category_by_id(cid))
-        db.session.commit()
-        cache.clear()
-        return "Deletion successful!"
-    pass
+        request_type=data["request_type"]
+        cname=data["cname"]
+
+        if request_type=="add":
+            add_request=ApproveCategory(request_type=request_type, cname=cname)
+            db.session.add(add_request)
+            db.session.commit()
+            return "Add category request sent!"
+        
+        elif request_type=="edit":
+            cid=data["cid"]
+            updated_cname=data["updated_cname"]
+            edit_request=ApproveCategory(category_id=cid,request_type=request_type, updated_cname=updated_cname,cname=cname)
+            db.session.add(edit_request)
+            db.session.commit()
+            return "Edit category request sent!"
+        
+        elif request_type=="delete":
+            cid=data["cid"]
+            delete_request=ApproveCategory(category_id=cid,request_type=request_type,cname=cname)
+            db.session.add(delete_request)
+            db.session.commit()
+            return "Delete category request sent!"
+
+@app.route("/manager-api/products",methods=["POST"])
+def product_op():
+    return "Product Opped"
+
+@app.route("/manager-api/products/<int:pid>",methods=["POST","DELETE"])
+def product_op():
+    return "Product Opped"
 
 # @app.route("/api/bookings", methods = ["GET", "POST"])
 # def getBookings():

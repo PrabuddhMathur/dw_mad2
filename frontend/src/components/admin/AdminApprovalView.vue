@@ -27,7 +27,7 @@
         </div>
         <!-- loop for products in specific category -->
         <div v-if="users.length > 0" class="container mb-4">
-                <div v-for="user in users" :key="user">
+                <div v-for="user in users" :key="user.id">
                     <div class="row">
                         <div class="col">
                             <div class="card">
@@ -82,7 +82,7 @@
         </div>
         <!-- loop for products in specific category -->
         <div v-if="categories.length > 0" class="container mb-4">
-                <div v-for="category in categories" :key="category">
+                <div v-for="category in categories" :key="category.id">
                     <div class="row">
                         <div class="col">
                             <div class="card">
@@ -95,10 +95,10 @@
                                             Update
                                         </div>
                                         <div class="col-1 text-center">
-                                            <a @click="approveCategory(category.category_id)" class="btn btn-success btn-md mx-auto d-grid col-12" type="submit">Approve</a>
+                                            <a @click="approveCategory(category.id)" class="btn btn-success btn-md mx-auto d-grid col-12" type="submit">Approve</a>
                                         </div>
                                         <div class="col-1 text-center">
-                                            <a @click="deleteCategory(category.category_id)" class="btn btn-danger btn-md mx-auto d-grid col-12" type="submit">Reject</a>
+                                            <a @click="deleteCategory(category.id)" class="btn btn-danger btn-md mx-auto d-grid col-12" type="submit">Reject</a>
                                         </div>
                                     </div>
                                 </div>
@@ -130,55 +130,68 @@ export default {
     methods: {
         async fetchCategories() {
             await axios
-            .get("http://127.0.0.1:1430/api/approval/categories")
+            .get("http://127.0.0.1:1430/admin-api/approval/categories")
                 .then((response) => response)
                 .then((response) => response.data)
                 .then((results) => {
                     this.categories = results;
                 })
-                .catch(()=>{
+                .catch((error)=>{
                     console.error("Category fetch error: ", error)
                 });
         },
         async fetchUsers() {
             await axios
-            .get("http://127.0.0.1:1430/api/approval/users")
+            .get("http://127.0.0.1:1430/admin-api/approval/users")
                 .then((response) => response)
                 .then((response) => response.data)
                 .then((results) => {
                     this.users = results;
                 })
-                .catch(()=>{
+                .catch((error)=>{
                     console.error("User fetch error: ", error)
                 });
         },
         async approveUser(user_id){
             await axios
-            .get("http://127.0.0.1:1430/api/approval/user/"+user_id)
+            .get("http://127.0.0.1:1430/admin-api/approval/user/"+user_id)
                 .then((response)=>response)
                 .then((response)=>response.data)
                 .then((results)=>{alert(results)})
         },
         async deleteUser(user_id){
             await axios
-            .delete("http://127.0.0.1:1430/api/approval/user/"+user_id)
+            .delete("http://127.0.0.1:1430/admin-api/approval/user/"+user_id)
                 .then((response)=>response)
                 .then((response)=>response.data)
-                .then((results)=>{alert(results)})
+                .then((results)=>{
+                    this.users = this.users.filter(user => user.id !== user_id);
+                    console.log(results)
+                    })
         },
         async approveCategory(approval_id){
             await axios
-            .get("http://127.0.0.1:1430/api/approval/category/"+approval_id)
+            .get("http://127.0.0.1:1430/admin-api/approval/category/"+approval_id)
                 .then((response)=>response)
                 .then((response)=>response.data)
-                .then((results)=>{alert(results)})
+                .then((results)=>{
+                    this.categories = this.categories.filter(category => category.category_id !== approval_id);
+                    console.log(results)
+                    })
         },
         async deleteCategory(approval_id){
             await axios
-            .delete("http://127.0.0.1:1430/api/approval/category/"+approval_id)
+            .delete("http://127.0.0.1:1430/admin-api/approval/category/"+approval_id)
                 .then((response)=>response)
                 .then((response)=>response.data)
-                .then((results)=>{alert(results)})
+                .then((results)=>{
+                    if ("error" in results){
+                        throw results
+                    }else{
+                        this.categories = this.categories.filter(category => category.category_id !== approval_id);
+                        console.log(results)
+                    }
+                })
         }
     },
     async beforeMount() {

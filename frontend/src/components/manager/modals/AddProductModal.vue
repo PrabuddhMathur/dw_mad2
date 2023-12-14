@@ -9,7 +9,7 @@
                 <form>
                     <div class="modal-body">
                         <div class="form-floating mb-3">
-                            <input name="ProductName" type="text" class="form-control" id="ProductName" placeholder="For Eg.: Chilli Powder" required>
+                            <input v-model="pname" name="ProductName" type="text" class="form-control" id="ProductName" placeholder="For Eg.: Chilli Powder" required>
                             <label for="ProductName">Product Name</label>
                         </div>
                         <div class="form-floating mb-3">
@@ -55,6 +55,21 @@ import axios from 'axios';
             category_id:{
                 type: Number,
                 required: true
+            }
+        },
+        data(){
+            return {
+                pname:"",
+            }
+        },
+        methods:{
+            async addProduct(){
+                await axios
+                .post("http://127.0.0.1:1430/api/categories",{
+                    cname:this.cname
+                })
+                .then((response)=>response.data)
+                .then((response)=>{alert(response)})
             }
         }
 }

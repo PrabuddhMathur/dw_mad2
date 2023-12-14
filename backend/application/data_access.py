@@ -70,7 +70,7 @@ def get_category_approval():
 
 @cache.memoize()
 def get_category_approval_by_id(approval_id):
-    category=ApproveCategory.filter_by(id=approval_id).first()
+    category=ApproveCategory.query.filter_by(id=approval_id).first()
     return category
             
 @cache.memoize()

@@ -86,10 +86,13 @@ export default {
         },
         async deleteCategory(cid){
             await axios
-            .delete("http://127.0.0.1:1430/api/category/"+cid)
+            .delete("http://127.0.0.1:1430/admin-api/category/"+cid)
             .then((response)=>response)
             .then((response)=>response.data)
-            .then((results)=>{alert(results)})
+            .then((results)=>{
+                this.categories = this.categories.filter(category => category.cid !== cid);
+                console.log(results)
+                })
         },
     },
     computed:{

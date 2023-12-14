@@ -31,7 +31,7 @@
     </div>
 </template>
 <script>
-import FlashErrorView from "./FlashErrorView.vue";
+import FlashErrorView from "../components/FlashStatusView.vue";
 import axios from "axios";
 export default {
     components: {

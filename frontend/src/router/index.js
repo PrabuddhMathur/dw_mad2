@@ -21,7 +21,7 @@ const router = createRouter({
       component: () => import('../views/DashboardView.vue'),
       beforeEnter: (to, from, next) => {
         const userSession = JSON.parse(localStorage.getItem("userSession"));
-        console.log("User Session:", userSession);
+        // console.log("User Session:", userSession);
 
         if (userSession) {
           axios.defaults.headers.common["Authorization"] = `Bearer ${userSession.token}`;
@@ -35,19 +35,19 @@ const router = createRouter({
               const role=response['role'];
 
               if (role === 'admin') {
-                console.log("Loading AdminDashboard.vue");
+                // console.log("Loading AdminDashboard.vue");
                 import('../components/admin/AdminDashboard.vue').then(module => {
                   to.matched[0].components = { default: module.default };
                   next();
                 });
               } else if (role === 'manager') {
-                console.log("Loading ManagerDashboard.vue");
+                // console.log("Loading ManagerDashboard.vue");
                 import('../components/manager/ManagerDashboard.vue').then(module => {
                   to.matched[0].components = { default: module.default };
                   next();
                 });
               } else {
-                console.log("Loading UserDashboard.vue");
+                // console.log("Loading UserDashboard.vue");
                 import('../components/user/UserDashboard.vue').then(module => {
                   to.matched[0].components = { default: module.default };
                   next();

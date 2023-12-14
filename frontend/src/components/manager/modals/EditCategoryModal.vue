@@ -15,7 +15,7 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                        <button @click="editCategory(category.cid)" type="submit" class="btn btn-primary">Save changes</button>
+                        <button @click="editCategoryApproval()" type="submit" class="btn btn-primary">Request changes</button>
                     </div>
             </form>
             </div>
@@ -33,17 +33,20 @@ import axios from 'axios';
         },
         data(){
             return {
-                updated_cname:this.category.cname,
+                updated_cname:this.category.cname
             }
         },
         methods:{
-            async editCategory(cid){
+            async editCategoryApproval(){
                 await axios
-                .post("http://127.0.0.1:1430/admin-api/category/"+cid,{
-                    cname:this.updated_cname
+                .post("http://127.0.0.1:1430/manager-api/approval/category",{
+                    cid:this.category.cid,
+                    cname:this.category.cname,
+                    updated_cname:this.updated_cname,
+                    request_type:"edit"
                 })
                 .then((response)=>response.data)
-                .then((response)=>{console.log(response)})
+                .then((response)=>{alert(response)})
             }
         }
     }

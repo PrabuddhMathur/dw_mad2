@@ -62,7 +62,7 @@
 </template>
 <script>
 import axios from 'axios';
-import FlashErrorView from "./FlashErrorView.vue";
+import FlashErrorView from "../components/FlashStatusView.vue";
 
 export default {
     components: {
