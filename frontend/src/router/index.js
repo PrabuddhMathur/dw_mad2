@@ -2,10 +2,10 @@ import { createRouter, createWebHistory } from 'vue-router'
 import LoginView from '../views/LoginView.vue'
 import RegisterView from '../views/RegisterView.vue'
 import CartView from '../views/CartView.vue'
-import AdminSummaryView from '../views/AdminSummaryView.vue'
+import AdminSummaryView from '../components/admin/AdminSummaryView.vue'
 import OrdersView from '../views/OrdersView.vue'
 import SearchView from '../views/SearchView.vue'
-import AdminApprovalView from '../views/AdminApprovalView.vue'
+import AdminApprovalView from '../components/admin/AdminApprovalView.vue'
 import axios from 'axios';
 
 const router = createRouter({

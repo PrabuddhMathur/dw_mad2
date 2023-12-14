@@ -11,6 +11,13 @@ class User(db.Model):
     items = db.relationship("Booking", backref = "user")
     approved=db.Column(db.Boolean, default=False)
 
+    def to_dict(self):
+        return{
+            "id":self.id,
+            "fname":self.fname,
+            "lname":self.lname,
+            "username":self.username,
+        }
 
 class Product(db.Model):
     __tablename__ = "products"
@@ -41,12 +48,16 @@ class ApproveCategory(db.Model):
     id = db.Column(db.Integer, primary_key = True)
     category_id = db.Column(db.Integer, db.ForeignKey("categories.cid", ondelete = "CASCADE"))
     cname = db.Column(db.String(150), unique=True)
+    updated_cname=db.Column(db.String(150), unique=True)
+    request_type=db.Column(db.String(150))
 
     def to_dict(self):
         return {
             "id":self.id,
             "category_id":self.category_id,
-            "cname":self.cname
+            "cname":self.cname,
+            "updated_cname":self.updated_cname,
+            "request_type":self.request_type
         }
    
 class Category(db.Model):

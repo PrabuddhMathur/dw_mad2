@@ -57,3 +57,23 @@ def get_user_id_by_token(token):
 def get_status(user_id):
     visited=Visited.query.filter_by(user_id=user_id).first()
     return visited
+
+@cache.memoize()
+def get_user_approval(status):
+    users=User.query.filter_by(approved=status).all()
+    return [user.to_dict() for user in users]
+
+@cache.memoize()
+def get_category_approval():
+    categories=ApproveCategory.query.all()
+    return [category.to_dict() for category in categories]
+
+@cache.memoize()
+def get_category_approval_by_id(approval_id):
+    category=ApproveCategory.filter_by(id=approval_id).first()
+    return category
+            
+@cache.memoize()
+def get_category_by_id(id):
+    category=Category.query.filter_by(cid=id).first()
+    return category

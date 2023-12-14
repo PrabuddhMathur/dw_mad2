@@ -89,6 +89,62 @@ def role():
     role=get_user_by_id(user_id).role
     return {"role":role}
        
+@app.route("/api/approval/users",methods=["GET","POST","DELETE"])
+def user_approvals():
+    if request.method == "GET":
+        users=get_user_approval(False)
+        return users
+
+@app.route("/api/approval/user/<int:user_id>", methods=["GET","DELETE"])
+def userid_approved(user_id):
+    if request.method=="GET":
+
+        user=get_user_by_id(user_id)
+        user.approved=True
+        db.session.commit()
+        cache.clear()
+
+        return f'Manager {user.username} request approved!'
+    else:
+
+        user=get_user_by_id(user_id)
+        db.session.delete(user)
+        db.session.commit()
+        cache.clear()
+        return f'Manager {user.username} request deleted!'
+    
+@app.route("/api/approval/categories",methods=["GET","DELETE"])
+def categories_approval():
+    if request.method == "GET":
+        cache.clear()
+        updated_categories=get_category_approval()        
+        return updated_categories
+    
+@app.route("/api/approval/category/<int:approval_id>",methods=["GET","DELETE"])
+def approvalid_approved(approval_id):
+    category=get_category_approval_by_id(approval_id)
+    if request.method=="GET":
+        if category.request_type=="add":
+            new_category=Category(cname=category.cname)
+            db.session.add(new_category)
+            db.session.commit()
+            cache.clear()
+            return f"Addiition request for {category.cname} category approved!"
+        elif category.request_type=="edit":
+            updated_category=get_category_by_id(cid=category.category_id)
+            updated_category.cname = category.cname
+            db.session.commit()
+            cache.clear()
+            return f"Updation request for {category.cname} category approved!"
+        else:
+            db.session.delete(get_category_by_id(category.category_id))
+            db.session.commit()
+            cache.clear()
+            return f"Deletion request for {category.cname} category approved!"
+    else:
+        db.session.delete(category)
+        return "Request declined!"
+
 
 # @app.route("/api/bookings", methods = ["GET", "POST"])
 # def getBookings():
