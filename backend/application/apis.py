@@ -10,6 +10,14 @@ def getCategories():
     if request.method == "GET":
         categories=get_all_categories()
         return categories
+    else:
+        data = request.get_json()
+        cname = data["cname"]
+        new_category=Category(cname=cname)
+        db.session.add(new_category)
+        db.session.commit()
+        cache.clear()
+        return f"Addition of {new_category.cname} successful!"
 
 @app.route("/api/products", methods = ["GET", "POST"])
 def getProducts():
@@ -89,7 +97,7 @@ def role():
     role=get_user_by_id(user_id).role
     return {"role":role}
        
-@app.route("/api/approval/users",methods=["GET","POST","DELETE"])
+@app.route("/api/approval/users",methods=["GET","DELETE"])
 def user_approvals():
     if request.method == "GET":
         users=get_user_approval(False)
@@ -145,6 +153,24 @@ def approvalid_approved(approval_id):
         db.session.delete(category)
         return "Request declined!"
 
+@app.route("/api/category/<int:cid>", methods = ["POST", "DELETE"])
+def getCategory(cid):
+    new_category=get_category_by_id(cid)
+    if request.method=="POST":
+        cache.clear()
+        data = request.get_json()
+        new_cname=data["cname"]
+        new_category.cname=new_cname
+        db.session.commit()
+        cache.clear()
+        return f"Updation for {new_category.cname} successful!"
+    else:
+        cache.clear()
+        db.session.delete(get_category_by_id(cid))
+        db.session.commit()
+        cache.clear()
+        return "Deletion successful!"
+    pass
 
 # @app.route("/api/bookings", methods = ["GET", "POST"])
 # def getBookings():
