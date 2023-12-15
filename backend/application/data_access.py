@@ -77,3 +77,8 @@ def get_category_approval_by_id(approval_id):
 def get_category_by_id(id):
     category=Category.query.filter_by(cid=id).first()
     return category
+
+@cache.memoize()
+def get_product_by_id(id):
+    product=Product.query.filter_by(pid=id).first()
+    return product

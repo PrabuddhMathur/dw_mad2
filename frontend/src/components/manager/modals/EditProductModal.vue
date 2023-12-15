@@ -9,19 +9,19 @@
             <form>
                 <div class="modal-body">
                     <div class="form-floating mb-3">
-                        <input name="ProductName" :value="this.product.pname" type="text" class="form-control" id="ProductName" placeholder="For Eg.: Chilli Powder" required>
+                        <input v-model="updated_pname" name="ProductName" value="this.product.pname" type="text" class="form-control" id="ProductName" placeholder="For Eg.: Chilli Powder" required>
                         <label for="ProductName">Product Name</label>
                     </div>
                     <div class="form-floating mb-3">
-                        <input name="manf_date" :value="this.product.manf_date" type="date" class="form-control" id="manf_date" required>
+                        <input v-model="updated_manf_date" name="manf_date" value="this.product.manf_date" type="date" class="form-control" id="manf_date" required>
                         <label for="manf_date">Manufacture Date</label>
                     </div>
                     <div class="form-floating mb-3">
-                        <input name="exp_date" :value="this.product.exp_date" type="date" class="form-control" id="exp_date" required>
+                        <input v-model="updated_exp_date" name="exp_date" value="this.product.exp_date" type="date" class="form-control" id="exp_date" required>
                         <label for="exp_date">Expiry Date</label>
                     </div>
                     <div class="form-floating mb-3">
-                        <select name="Unit" class="form-select" :value="this.product.unit" id="Unit" aria-label="Floating label select example" required>
+                        <select v-model="updated_unit" name="Unit" class="form-select" value="this.product.unit" id="Unit" aria-label="Floating label select example" required>
                         <option value="kg">kg</option>
                         <option value="gm">gm</option>
                         <option value="litre">litre</option>
@@ -31,17 +31,17 @@
                         <label for="Unit">Unit</label>
                     </div>
                     <div class="form-floating mb-3">
-                        <input name="Rate/unit" :value="this.product.rateperunit" type="number" class="form-control" id="Rate/unit" min="1" required>
+                        <input v-model="updated_rateperunit" name="Rate/unit" value="this.product.rateperunit" type="number" class="form-control" id="Rate/unit" min="1" required>
                         <label for="Rate/unit">Rate/unit</label>
                     </div>
                     <div class="form-floating mb-3">
-                        <input name="Quantity" :value="this.product.quantity" type="number" class="form-control" id="Quantity" min="1" required>
+                        <input v-model="updated_quantity" name="Quantity" value="this.product.quantity" type="number" class="form-control" id="Quantity" min="1" required>
                         <label for="Quantity">Quantity</label>
                     </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="submit" class="btn btn-primary">Submit Request</button>
+                    <button @click="editProduct(product.pid)" type="submit" class="btn btn-primary">Submit</button>
                 </div>
             </form>
         </div>
@@ -55,6 +55,31 @@ import axios from 'axios';
             product:{
                 type: Object,
                 required: true
+            }
+        },
+        data(){
+            return {
+                updated_pname:this.product.pname,
+                updated_manf_date:new Date(this.product.manf_date).toISOString().split('T')[0],
+                updated_exp_date:new Date(this.product.exp_date).toISOString().split('T')[0],
+                updated_unit:this.product.unit,
+                updated_rateperunit:this.product.rateperunit,
+                updated_quantity:this.product.quantity
+            }
+        },
+        methods:{
+            async editProduct(pid){
+                await axios
+                .post("http://127.0.0.1:1430/manager-api/product/"+pid,{
+                    pname:this.updated_pname,
+                    manf_date:this.updated_manf_date,
+                    exp_date:this.updated_exp_date,
+                    unit:this.updated_unit,
+                    rateperunit:this.updated_rateperunit,
+                    quantity:this.updated_quantity
+                })
+                .then((response)=>response.data)
+                .then((response)=>{console.log(response)})
             }
         }
     }

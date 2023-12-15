@@ -198,13 +198,43 @@ def manager_category():
             db.session.commit()
             return "Delete category request sent!"
 
-@app.route("/manager-api/products",methods=["POST"])
-def product_op():
-    return "Product Opped"
+#Add product in this API.
+@app.route("/manager-api/product/add",methods=["POST"])
+def product_add():
+    data = request.get_json()
+    category_id = data["category_id"]
+    pname = data["pname"]
+    manf_date = datetime.datetime.strptime(data["manf_date"], '%Y-%m-%d')
+    exp_date = datetime.datetime.strptime(data["exp_date"], '%Y-%m-%d')
+    unit = data["unit"]
+    rateperunit = data["rateperunit"]
+    quantity = data["quantity"]
+    new_product=Product(category_id=category_id, pname=pname, manf_date=manf_date, exp_date=exp_date, unit=unit, rateperunit=rateperunit, quantity=quantity)
+    db.session.add(new_product)
+    db.session.commit()
+    cache.clear()
+    return f"Addition of {new_product.cname} successful!"
 
-@app.route("/manager-api/products/<int:pid>",methods=["POST","DELETE"])
-def product_op():
-    return "Product Opped"
+#Update and Delete product in this one.
+@app.route("/manager-api/product/<int:pid>",methods=["POST","DELETE"])
+def product_op(pid):
+    new_product=get_product_by_id(pid)
+    if request.method=="POST":
+        data = request.get_json()
+        new_product.pname=data["pname"]
+        new_product.manf_date=datetime.datetime.strptime(data["manf_date"], '%Y-%m-%d')
+        new_product.exp_date=datetime.datetime.strptime(data["exp_date"], '%Y-%m-%d')
+        new_product.unit=data["unit"]
+        new_product.rateperunit=data["rateperunit"]
+        new_product.quantity=data["quantity"]
+        db.session.commit()
+        cache.clear()
+        return f"Updation for {new_product.pname} successful!"
+    else:
+        db.session.delete(get_product_by_id(pid))
+        db.session.commit()
+        cache.clear()
+        return "Deletion successful!"
 
 # @app.route("/api/bookings", methods = ["GET", "POST"])
 # def getBookings():

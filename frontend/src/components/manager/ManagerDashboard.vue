@@ -36,7 +36,7 @@
                             <button class="btn btn-outline-dark btn-sm mx-2" type="button" data-bs-toggle="modal" :data-bs-target="'#'+ product.pid + 'EditProductModal'"><i class="fa-solid fa-pen"></i></button>
                             <!-- EditProductModal -->
                             <EditProductModal :product="product" />
-                            <a :href="'/delete/product/'+ product.pid" class="btn btn-outline-danger btn-sm" type="submit"><i class="fa-solid fa-trash-can"></i></a>                    
+                            <a @click="deleteProduct(product.pid)" class="btn btn-outline-danger btn-sm" type="submit"><i class="fa-solid fa-trash-can"></i></a>                    
                         </div>
                         </div>
                     </div>
@@ -88,6 +88,16 @@ export default {
                 .catch(()=>{
                     console.error("Category error: ", error)
                 });
+        },
+        async deleteProduct(pid){
+            await axios
+            .delete("http://127.0.0.1:1430//manager-api/product/"+pid)
+            .then((response)=>response)
+            .then((response)=>response.data)
+            .then((results)=>{
+                // this.categories = this.categories.filter(category => category.cid !== cid);
+                console.log(results)
+                })
         }
     },
     computed:{
