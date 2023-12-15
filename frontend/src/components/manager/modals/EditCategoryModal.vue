@@ -9,7 +9,7 @@
                 <form >
                     <div class="modal-body">
                         <div class="form-floating mb-3">
-                            <input v-model="updated_cname" name="CategoryName" type="text" class="form-control" placeholder="For Eg.: Spices" required>
+                            <input v-model="updated_cname" name="CategoryName" value="this.category.cname" type="text" class="form-control" placeholder="For Eg.: Spices" required>
                             <label for="CategoryName">Category Name</label>
                         </div>
                     </div>
@@ -33,7 +33,7 @@ import axios from 'axios';
         },
         data(){
             return {
-                updated_cname:this.category.cname
+                updated_cname:""
             }
         },
         methods:{
@@ -43,7 +43,7 @@ import axios from 'axios';
                     cid:this.category.cid,
                     cname:this.category.cname,
                     updated_cname:this.updated_cname,
-                    request_type:"edit"
+                    request_type:"Update"
                 })
                 .then((response)=>response.data)
                 .then((response)=>{alert(response)})

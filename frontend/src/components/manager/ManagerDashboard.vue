@@ -14,7 +14,7 @@
                     <div class="d-flex col-2 align-items-center">
                         <button class="btn btn-dark mx-2" type="button" data-bs-toggle="modal" :data-bs-target="'#'+ category.cid + 'EditCategoryModal'"><i class="fa-solid fa-pen"></i></button>
                         <EditCategoryModal :category="category" />
-                        <a :href="'/delete/category/'+category.cid" class="btn btn-danger" type="submit"><i class="fa-solid fa-trash-can"></i></a>
+                        <a @click="deleteCategoryApproval(category.cid)" class="btn btn-danger" type="submit"><i class="fa-solid fa-trash-can"></i></a>
                     </div>
                     <div class="d-flex col-7 align-items-center">
                         <button class="btn btn-dark ms-auto" type="button" data-bs-toggle="modal" :data-bs-target="'#'+ category.cid +'AddProductModal'"><i class="fa-solid fa-circle-plus"></i> Add Product</button>
@@ -89,9 +89,21 @@ export default {
                     console.error("Category error: ", error)
                 });
         },
+        
+        async deleteCategoryApproval(cid){
+            await axios
+            .post("http://127.0.0.1:1430/manager-api/approval/category",{
+                cid:cid,
+                request_type:"Update"
+            })
+            .then((response)=>response.data)
+            .then((response)=>{alert(response)})
+        },
         async deleteProduct(pid){
             await axios
-            .delete("http://127.0.0.1:1430//manager-api/product/"+pid)
+            .delete("http://127.0.0.1:1430/manager-api/product/"+pid, {
+                request_type:"Delete"
+            })
             .then((response)=>response)
             .then((response)=>response.data)
             .then((results)=>{

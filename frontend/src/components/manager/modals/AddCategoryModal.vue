@@ -34,7 +34,7 @@ import axios from 'axios';
             async addCategoryRequest(){
                 await axios
                 .post("http://127.0.0.1:1430/manager-api/approval/category",{
-                    request_type:"add",
+                    request_type:"Add",
                     cname:this.cname
                 })
                 .then((response)=>response.data)

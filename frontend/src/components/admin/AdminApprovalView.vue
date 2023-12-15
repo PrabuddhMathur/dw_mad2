@@ -91,8 +91,11 @@
                                         <div class="col-2 text-center">
                                             {{ category.cname }}
                                         </div>
-                                        <div class="col-8 text-center">
-                                            Update
+                                        <div v-if="category.request_type=='Update'" class="col-8 text-center">
+                                            {{ category.request_type }} category : {{ category.updated_cname }}
+                                        </div>
+                                        <div v-else class="col-8 text-center">
+                                            {{ category.request_type }} category
                                         </div>
                                         <div class="col-1 text-center">
                                             <a @click="approveCategory(category.id)" class="btn btn-success btn-md mx-auto d-grid col-12" type="submit">Approve</a>

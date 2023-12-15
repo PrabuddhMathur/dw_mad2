@@ -2,6 +2,7 @@
     <nav class="navbar navbar-expand-lg bg-dark sticky-top bg-gradient">
         <div class="container">
             <a class="navbar-brand" href="/dashboard" style="font-family: 'Bagel Fat One';font-size: 32px; color: aliceblue;">Grocilla</a>
+            <span class="navbar-text" style="font-size: 28px; color: aliceblue;">welcomes you, Admin!</span>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>

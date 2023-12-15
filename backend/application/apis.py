@@ -145,21 +145,21 @@ def userid_approved(user_id):
 def approvalid_approved(approval_id):
     category=get_category_approval_by_id(approval_id)
     if request.method=="GET":
-        if category.request_type=="add":
+        if category.request_type=="Add":
             new_category=Category(cname=category.cname)
             db.session.add(new_category)
             db.session.delete(category)
             db.session.commit()
             cache.clear()
             return f"Addition request for {category.cname} category approved!"
-        elif category.request_type=="edit":
+        elif category.request_type=="Update":
             updated_category=get_category_by_id(cid=category.category_id)
             updated_category.cname = category.cname
             db.session.delete(category)
             db.session.commit()
             cache.clear()
             return f"Updation request for {category.cname} category approved!"
-        elif category.request_type=="delete":
+        elif category.request_type=="Delete":
             db.session.delete(get_category_by_id(category.category_id))
             db.session.delete(category)
             db.session.commit()
@@ -177,13 +177,13 @@ def manager_category():
         request_type=data["request_type"]
         cname=data["cname"]
 
-        if request_type=="add":
+        if request_type=="Add":
             add_request=ApproveCategory(request_type=request_type, cname=cname)
             db.session.add(add_request)
             db.session.commit()
             return "Add category request sent!"
         
-        elif request_type=="edit":
+        elif request_type=="Update":
             cid=data["cid"]
             updated_cname=data["updated_cname"]
             edit_request=ApproveCategory(category_id=cid,request_type=request_type, updated_cname=updated_cname,cname=cname)
@@ -191,7 +191,7 @@ def manager_category():
             db.session.commit()
             return "Edit category request sent!"
         
-        elif request_type=="delete":
+        elif request_type=="Delete":
             cid=data["cid"]
             delete_request=ApproveCategory(category_id=cid,request_type=request_type,cname=cname)
             db.session.add(delete_request)
