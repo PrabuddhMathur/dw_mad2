@@ -85,7 +85,7 @@ export default {
         async register() {
             if (this.password != this.password2) {
                 alert("Passwords do not match!");
-            }
+            }else{
             await axios
             .post("http://127.0.0.1:1430/api/register", {
                 username: this.username,
@@ -115,6 +115,7 @@ export default {
 					.catch((response)=>{
 						alert(response['message'])
 					})
+            }
         }
     }
 }

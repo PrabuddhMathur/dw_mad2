@@ -8,7 +8,7 @@
         <AddCategoryModal />
 
         <div v-if="categories.length > 0" class="container mb-4">
-            <div v-for="category in categories" :key="category">
+            <div v-for="category in categories" :key="category.cid">
                 <div  class="row">
                     <h5 class="col-3" style="margin-top: 6px; font-family: 'Bangers';font-size: 28px;">{{ category.cname }}</h5>
                     <div class="d-flex col-2 align-items-center">

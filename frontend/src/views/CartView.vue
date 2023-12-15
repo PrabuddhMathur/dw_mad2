@@ -136,35 +136,26 @@ export default {
     methods: {
         async fetchBookings() {
             await axios
-            .get("http://127.0.0.1:1430/api/categories")
+            .get("http://127.0.0.1:1430/user-api/bookings")
                 .then((response) => response)
                 .then((response) => response.data)
                 .then((results) => {
-                    this.categories = results;
+                    this.bookings = results;
                 })
                 .catch(()=>{
-                    console.error("Category error: ", error)
+                    console.error("Booking error: ", error)
                 });
         },
-        async deleteCategory(cid){
-            await axios
-            .delete("http://127.0.0.1:1430/admin-api/category/"+cid)
-            .then((response)=>response)
-            .then((response)=>response.data)
-            .then((results)=>{
-                this.categories = this.categories.filter(category => category.cid !== cid);
-                console.log(results)
-                })
-        },
-    },
-    computed:{
-        getCategories(){return this.categories;}
-    },
-    async beforeMount() {
-        await this.fetchCategories();
-    },
-    mounted() {
-		document.title = "Admin Dashboard";
-	}
+        // async deleteCategory(cid){
+        //     await axios
+        //     .delete("http://127.0.0.1:1430/admin-api/category/"+cid)
+        //     .then((response)=>response)
+        //     .then((response)=>response.data)
+        //     .then((results)=>{
+        //         this.categories = this.categories.filter(category => category.cid !== cid);
+        //         console.log(results)
+        //         })
+        // },
+    }
 }
 </script>

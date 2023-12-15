@@ -63,15 +63,15 @@ def get_user_approval(status):
     users=User.query.filter_by(approved=status).all()
     return [user.to_dict() for user in users]
 
-@cache.memoize()
-def get_category_approval():
-    categories=ApproveCategory.query.all()
-    return [category.to_dict() for category in categories]
+# @cache.memoize()
+# def get_category_approval():
+#     categories=ApproveCategory.query.all()
+#     return [category.to_dict() for category in categories]
 
-@cache.memoize()
-def get_category_approval_by_id(approval_id):
-    category=ApproveCategory.query.filter_by(id=approval_id).first()
-    return category
+# @cache.memoize()
+# def get_category_approval_by_id(approval_id):
+#     category=ApproveCategory.query.filter_by(id=approval_id).first()
+#     return category
             
 @cache.memoize()
 def get_category_by_id(id):

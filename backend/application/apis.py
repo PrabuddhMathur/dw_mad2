@@ -36,7 +36,7 @@ def getCategory(cid):
         cache.clear()
         return f"Updation for {new_category.cname} successful!"
     else:
-        db.session.delete(get_category_by_id(cid))
+        db.session.delete(new_category)
         db.session.commit()
         cache.clear()
         return "Deletion successful!"
@@ -112,7 +112,18 @@ def role():
     user_id=get_user_id_by_token(decodedToken['token'])
     role=get_user_by_id(user_id).role
     return {"role":role}
-       
+
+# @app.route("/api/details")
+# def details():
+#     token=request.headers.get("Authorization", "").split(" ")[-1]
+#     if not token:
+#         return [False]
+#     decodedToken=jwt.decode(token,app.secret_key,algorithms=["HS256"])
+#     user_id=get_user_id_by_token(decodedToken['token'])
+#     user_name=get_user_by_id(user_id).username
+#     return {"user_id":user_id,"user_name":user_name}
+
+
 @app.route("/admin-api/approval/users")
 def user_approvals():
     users=get_user_approval(False)
@@ -120,8 +131,8 @@ def user_approvals():
 
 @app.route("/admin-api/approval/categories")
 def categories_approval():
-    updated_categories=get_category_approval()        
-    return updated_categories
+    updated_categories=ApproveCategory.query.all()       
+    return [i.to_dict() for i in updated_categories]
 
 @app.route("/admin-api/approval/user/<int:user_id>", methods=["GET","DELETE"])
 def userid_approved(user_id):
@@ -143,7 +154,7 @@ def userid_approved(user_id):
     
 @app.route("/admin-api/approval/category/<int:approval_id>",methods=["GET","DELETE"])
 def approvalid_approved(approval_id):
-    category=get_category_approval_by_id(approval_id)
+    category=ApproveCategory.query.filter_by(id=approval_id).first()
     if request.method=="GET":
         if category.request_type=="Add":
             new_category=Category(cname=category.cname)
@@ -175,9 +186,9 @@ def manager_category():
     if request.method=="POST":
         data = request.get_json()
         request_type=data["request_type"]
-        cname=data["cname"]
 
         if request_type=="Add":
+            cname=data["cname"]
             add_request=ApproveCategory(request_type=request_type, cname=cname)
             db.session.add(add_request)
             db.session.commit()
@@ -186,6 +197,7 @@ def manager_category():
         elif request_type=="Update":
             cid=data["cid"]
             updated_cname=data["updated_cname"]
+            cname=data["cname"]
             edit_request=ApproveCategory(category_id=cid,request_type=request_type, updated_cname=updated_cname,cname=cname)
             db.session.add(edit_request)
             db.session.commit()
@@ -193,7 +205,8 @@ def manager_category():
         
         elif request_type=="Delete":
             cid=data["cid"]
-            delete_request=ApproveCategory(category_id=cid,request_type=request_type,cname=cname)
+            cat=get_category_by_id(cid)
+            delete_request=ApproveCategory(category_id=cid,request_type=request_type,cname=cat.cname)
             db.session.add(delete_request)
             db.session.commit()
             return "Delete category request sent!"
@@ -236,12 +249,54 @@ def product_op(pid):
         cache.clear()
         return "Deletion successful!"
 
-# @app.route("/api/bookings", methods = ["GET", "POST"])
-# def getBookings():
-#     if request.method == "GET":
-#         bookings = Booking.query.all()
-#         return [booking.to_dict() for booking in bookings]
+@app.route("/user-api/bookings/<int:uid>")
+def getBookings(uid):
+    if request.method == "GET":
+        bookings = get_user_bookings(uid)
+        return bookings
+    else:
+        return "Invalid HTTP Request"
+    
+@app.route("/user-api/bookings/<int:pid>",methods=["POST","DELETE"])
+def Cart(pid):
+    if request.method=="POST":
+        token=request.headers.get("Authorization", "").split(" ")[-1]
+        if token:
+            decodedToken=jwt.decode(token,app.secret_key,algorithms=["HS256"])
+            user_id=get_user_id_by_token(decodedToken['token'])
 
+            data=request.get_json()
+            quantity=data['quantity']
+            pid=data['pid']
+            product_name=data['product_name']
+            category_name=data['category_name']
+            
+            new_booking=Booking(category_name=category_name,quantity_of_item=quantity,user_id=user_id,item_name=product_name,product_id=pid)
+            db.session.add(new_booking)
+            db.session.commit()
+            cache.clear()
+        else: 
+            return "User not authorized"
+    else:
+        return "Invalid HTTP Request"
+
+
+
+@app.route("/user-api/bookings/<int:bookingid>",methods=["POST","DELETE"])
+def CartActions(bookingid):
+    if request.method=="POST":
+        pass
+    elif request.method=="DELETE":
+        token=request.headers.get("Authorization", "").split(" ")[-1]
+        if token:
+            db.session.delete(get_booking_by_id(bookingid))
+            cache.clear()
+            return "Booking deletion successful"
+        else:
+            return "User not authorized"
+    else:
+        return "Invalid HTTP Request"
+        
 # @app.route("/api/orders", methods = ["GET", "POST"])
 # def getOrders():
 #     if request.method == "GET":

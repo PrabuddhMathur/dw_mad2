@@ -46,7 +46,7 @@ import axios from 'axios';
                     request_type:"Update"
                 })
                 .then((response)=>response.data)
-                .then((response)=>{alert(response)})
+                .then((response)=>{console.log(response)})
             }
         }
     }

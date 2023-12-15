@@ -94,16 +94,14 @@ export default {
             await axios
             .post("http://127.0.0.1:1430/manager-api/approval/category",{
                 cid:cid,
-                request_type:"Update"
+                request_type:"Delete"
             })
             .then((response)=>response.data)
-            .then((response)=>{alert(response)})
+            .then((response)=>{console.log(response)})
         },
         async deleteProduct(pid){
             await axios
-            .delete("http://127.0.0.1:1430/manager-api/product/"+pid, {
-                request_type:"Delete"
-            })
+            .delete("http://127.0.0.1:1430/manager-api/product/"+pid)
             .then((response)=>response)
             .then((response)=>response.data)
             .then((results)=>{
