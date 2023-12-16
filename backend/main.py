@@ -7,6 +7,7 @@ from flask_cors import CORS
 import secrets
 from application import workers
 
+
 app=None
 
 def create_app():
@@ -48,8 +49,11 @@ def create_app():
         broker_url=app.config["CELERY_BROKER_URL"],
         result_backend=app.config["CELERY_RESULT_BACKEND"],
     )
+    from application import tasks
     celery.Task = workers.ContextTask
+
     app.app_context().push()
+
     return app,celery
 
 app,celery = create_app()

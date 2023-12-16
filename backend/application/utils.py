@@ -9,7 +9,7 @@ from email import encoders
 def send_email(address, subject, message, attachment=None, images=None, filename=None, subtype=None):
     SMTP_SERVER_HOST = "localhost"
     SMTP_SERVER_PORT = 1025
-    SENDER_ADDRESS = "support@verygoodmoviebookingsite.com"
+    SENDER_ADDRESS = "support@grocilla.com"
     SENDER_PASSWORD = ""
 
     msg = MIMEMultipart()
