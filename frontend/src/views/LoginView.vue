@@ -1,6 +1,5 @@
 <template>
     <div>
-        <!-- <FlashErrorView /> -->
         <div class="container-fluid">
         <div class="row">  
             <div class="col-6 d-flex justify-content-start"></div>      
@@ -31,12 +30,8 @@
     </div>
 </template>
 <script>
-import FlashErrorView from "../components/FlashStatusView.vue";
 import axios from "axios";
 export default {
-    components: {
-        FlashErrorView
-    },
     data() {
         return {
             userSession: JSON.parse(localStorage.getItem("userSession")) || null,

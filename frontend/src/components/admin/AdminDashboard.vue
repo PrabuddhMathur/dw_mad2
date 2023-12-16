@@ -68,35 +68,39 @@ export default {
     },
     data() {
         return {
+            userSession: JSON.parse(localStorage.getItem("userSession")) || null,
             categories: []
         }
     },
     methods: {
         async fetchCategories() {
-            await axios
-            .get("http://127.0.0.1:1430/api/categories")
-                .then((response) => response)
-                .then((response) => response.data)
-                .then((results) => {
-                    this.categories = results;
-                })
-                .catch(()=>{
-                    console.error("Category error: ", error)
-                });
+            if (this.userSession){
+                axios.defaults.headers.common["Authorization"] = `Bearer ${this.userSession.token}`;
+                await axios
+                .get("http://127.0.0.1:1430/api/categories")
+                    .then((response) => response)
+                    .then((response) => response.data)
+                    .then((results) => {
+                        this.categories = results;
+                    })
+                    .catch(()=>{
+                        console.error("Category error: ", error)
+                    });
+            }else{alert("Please login and try again!")}
         },
         async deleteCategory(cid){
-            await axios
-            .delete("http://127.0.0.1:1430/admin-api/category/"+cid)
-            .then((response)=>response)
-            .then((response)=>response.data)
-            .then((results)=>{
-                this.categories = this.categories.filter(category => category.cid !== cid);
-                console.log(results)
-                })
+            if (this.userSession){
+                axios.defaults.headers.common["Authorization"] = `Bearer ${this.userSession.token}`;
+                await axios
+                .delete("http://127.0.0.1:1430/admin-api/category/"+cid)
+                .then((response)=>response)
+                .then((response)=>response.data)
+                .then((results)=>{
+                    this.categories = this.categories.filter(category => category.cid !== cid);
+                    console.log(results)
+                    })
+            }else{alert("Please login and try again!")}
         },
-    },
-    computed:{
-        getCategories(){return this.categories;}
     },
     async beforeMount() {
         await this.fetchCategories();

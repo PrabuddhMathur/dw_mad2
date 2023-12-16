@@ -8,38 +8,69 @@ import jwt, secrets,datetime
 @app.route("/api/categories", methods = ["GET", "POST"])
 def getCategories():
     if request.method == "GET":
-        categories=get_all_categories()
-        return categories
+        token=request.headers.get("Authorization", "").split(" ")[-1]
+        if token:
+            categories=get_all_categories()
+            return categories
+        else:
+            return "User not authorized"
+        
+    elif request.method=="POST":
+        token=request.headers.get("Authorization", "").split(" ")[-1]
+        if token:
+            decodedToken=jwt.decode(token,app.secret_key,algorithms=["HS256"])
+            user_id=get_user_id_by_token(decodedToken['token'])
+            if get_user_by_id(user_id).role=="admin":
+                data = request.get_json()
+                cname = data["cname"]
+                new_category=Category(cname=cname)
+                db.session.add(new_category)
+                db.session.commit()
+                cache.clear()
+                return f"Addition of {new_category.cname} successful!"
+            else:
+                return "User operation not allowed"
+        else:
+            return "User not authorized"
     else:
-        data = request.get_json()
-        cname = data["cname"]
-        new_category=Category(cname=cname)
-        db.session.add(new_category)
-        db.session.commit()
-        cache.clear()
-        return f"Addition of {new_category.cname} successful!"
-
-@app.route("/api/products", methods = ["GET", "POST"])
-def getProducts():
-    if request.method == "GET":
-        products=get_all_products()
-        return [product.to_dict() for product in products]
+        return "Invalid HTTP Request"
 
 @app.route("/admin-api/category/<int:cid>", methods = ["POST", "DELETE"])
 def getCategory(cid):
     new_category=get_category_by_id(cid)
     if request.method=="POST":
-        data = request.get_json()
-        new_cname=data["cname"]
-        new_category.cname=new_cname
-        db.session.commit()
-        cache.clear()
-        return f"Updation for {new_category.cname} successful!"
+        token=request.headers.get("Authorization", "").split(" ")[-1]
+        if token:
+            decodedToken=jwt.decode(token,app.secret_key,algorithms=["HS256"])
+            user_id=get_user_id_by_token(decodedToken['token'])
+            if get_user_by_id(user_id).role=="admin":
+                data = request.get_json()
+                new_cname=data["cname"]
+                new_category.cname=new_cname
+                db.session.commit()
+                cache.clear()
+                return f"Updation for {new_category.cname} successful!"
+            else:
+                return "User operation not allowed"
+        else:
+            return "User not authorized"
+        
+    elif request.method=="DELETE":
+        token=request.headers.get("Authorization", "").split(" ")[-1]
+        if token:
+            decodedToken=jwt.decode(token,app.secret_key,algorithms=["HS256"])
+            user_id=get_user_id_by_token(decodedToken['token'])
+            if get_user_by_id(user_id).role=="admin":
+                db.session.delete(new_category)
+                db.session.commit()
+                cache.clear()
+                return "Deletion successful!"
+            else:
+                return "User operation not allowed"
+        else:
+            return "User not authorized"
     else:
-        db.session.delete(new_category)
-        db.session.commit()
-        cache.clear()
-        return "Deletion successful!"
+        return "Invalid HTTP Request"
 
 @app.route("/api/register", methods = ["POST"])
 def register():
@@ -113,73 +144,125 @@ def role():
     role=get_user_by_id(user_id).role
     return {"role":role}
 
-# @app.route("/api/details")
-# def details():
-#     token=request.headers.get("Authorization", "").split(" ")[-1]
-#     if not token:
-#         return [False]
-#     decodedToken=jwt.decode(token,app.secret_key,algorithms=["HS256"])
-#     user_id=get_user_id_by_token(decodedToken['token'])
-#     user_name=get_user_by_id(user_id).username
-#     return {"user_id":user_id,"user_name":user_name}
-
-
 @app.route("/admin-api/approval/users")
 def user_approvals():
-    users=get_user_approval(False)
-    return users
+    if request.method=="GET":
+        token=request.headers.get("Authorization", "").split(" ")[-1]
+        if token:
+            decodedToken=jwt.decode(token,app.secret_key,algorithms=["HS256"])
+            user_id=get_user_id_by_token(decodedToken['token'])
+            if get_user_by_id(user_id).role=="admin":
+                users=get_user_approval(False)
+                return users
+            else:
+                return "User operation not allowed"
+        else:
+            return "User not authorized"
+    else:
+        return "Invalid HTTP Request"
 
 @app.route("/admin-api/approval/categories")
 def categories_approval():
-    updated_categories=ApproveCategory.query.all()       
-    return [i.to_dict() for i in updated_categories]
+    if request.method=="GET":
+        token=request.headers.get("Authorization", "").split(" ")[-1]
+        if token:
+            decodedToken=jwt.decode(token,app.secret_key,algorithms=["HS256"])
+            user_id=get_user_id_by_token(decodedToken['token'])
+            if get_user_by_id(user_id).role=="admin":
+                updated_categories=ApproveCategory.query.all()       
+                return [i.to_dict() for i in updated_categories]
+            else:
+                return "User operation not allowed"
+        else:
+            return "User not authorized"
+    else:
+        return "Invalid HTTP Request"
 
 @app.route("/admin-api/approval/user/<int:user_id>", methods=["GET","DELETE"])
 def userid_approved(user_id):
     if request.method=="GET":
+        token=request.headers.get("Authorization", "").split(" ")[-1]
+        if token:
+            decodedToken=jwt.decode(token,app.secret_key,algorithms=["HS256"])
+            user_id=get_user_id_by_token(decodedToken['token'])
+            if get_user_by_id(user_id).role=="admin":
+                user=get_user_by_id(user_id)
+                user.approved=True
+                db.session.commit()
+                cache.clear()
 
-        user=get_user_by_id(user_id)
-        user.approved=True
-        db.session.commit()
-        cache.clear()
-
-        return f'Manager {user.username} request approved!'
+                return f'Manager {user.username} request approved!'
+            else:
+                return "User operation not allowed"
+        else:
+            return "User not authorized"
+    elif request.method=="DELETE":
+        token=request.headers.get("Authorization", "").split(" ")[-1]
+        if token:
+            decodedToken=jwt.decode(token,app.secret_key,algorithms=["HS256"])
+            user_id=get_user_id_by_token(decodedToken['token'])
+            if get_user_by_id(user_id).role=="admin":
+                user=get_user_by_id(user_id)
+                db.session.delete(user)
+                db.session.commit()
+                cache.clear()
+                return f'Manager {user.username} request deleted!'
+            else:
+                return "User operation not allowed"
+        else:
+            return "User not authorized"
     else:
-
-        user=get_user_by_id(user_id)
-        db.session.delete(user)
-        db.session.commit()
-        cache.clear()
-        return f'Manager {user.username} request deleted!'
+        return "Invalid HTTP Request"
     
 @app.route("/admin-api/approval/category/<int:approval_id>",methods=["GET","DELETE"])
 def approvalid_approved(approval_id):
     category=ApproveCategory.query.filter_by(id=approval_id).first()
     if request.method=="GET":
-        if category.request_type=="Add":
-            new_category=Category(cname=category.cname)
-            db.session.add(new_category)
-            db.session.delete(category)
-            db.session.commit()
-            cache.clear()
-            return f"Addition request for {category.cname} category approved!"
-        elif category.request_type=="Update":
-            updated_category=get_category_by_id(cid=category.category_id)
-            updated_category.cname = category.cname
-            db.session.delete(category)
-            db.session.commit()
-            cache.clear()
-            return f"Updation request for {category.cname} category approved!"
-        elif category.request_type=="Delete":
-            db.session.delete(get_category_by_id(category.category_id))
-            db.session.delete(category)
-            db.session.commit()
-            cache.clear()
-            return f"Deletion request for {category.cname} category approved!"
+        token=request.headers.get("Authorization", "").split(" ")[-1]
+        if token:
+            decodedToken=jwt.decode(token,app.secret_key,algorithms=["HS256"])
+            user_id=get_user_id_by_token(decodedToken['token'])
+            if get_user_by_id(user_id).role=="admin":
+                if category.request_type=="Add":
+                    new_category=Category(cname=category.cname)
+                    db.session.add(new_category)
+                    db.session.delete(category)
+                    db.session.commit()
+                    cache.clear()
+                    return f"Addition request for {category.cname} category approved!"
+                elif category.request_type=="Update":
+                    updated_category=get_category_by_id(category.category_id)
+                    updated_category.cname = category.cname
+                    db.session.delete(category)
+                    db.session.commit()
+                    cache.clear()
+                    return f"Updation request for {category.cname} category approved!"
+                elif category.request_type=="Delete":
+                    db.session.delete(get_category_by_id(category.category_id))
+                    db.session.delete(category)
+                    db.session.commit()
+                    cache.clear()
+                    return f"Deletion request for {category.cname} category approved!"
+            else:
+                return "User operation not allowed"
+        else:
+            return "User not authorized"
+    
+    elif request.method=="DELETE":
+        token=request.headers.get("Authorization", "").split(" ")[-1]
+        if token:
+            decodedToken=jwt.decode(token,app.secret_key,algorithms=["HS256"])
+            user_id=get_user_id_by_token(decodedToken['token'])
+            if get_user_by_id(user_id).role=="admin":
+                db.session.delete(category)
+                db.session.commit()
+                return "Request declined!"
+            else:
+                return "User operation not allowed"
+        else:
+            return "User not authorized"
     else:
-        db.session.delete(category)
-        db.session.commit()
-        return "Request declined!"
+        return "Invalid HTTP Request"
 
 @app.route("/manager-api/approval/category",methods=["POST"])
 def manager_category():
@@ -211,7 +294,6 @@ def manager_category():
             db.session.commit()
             return "Delete category request sent!"
 
-#Add product in this API.
 @app.route("/manager-api/product/add",methods=["POST"])
 def product_add():
     data = request.get_json()
@@ -228,7 +310,6 @@ def product_add():
     cache.clear()
     return f"Addition of {new_product.cname} successful!"
 
-#Update and Delete product in this one.
 @app.route("/manager-api/product/<int:pid>",methods=["POST","DELETE"])
 def product_op(pid):
     new_product=get_product_by_id(pid)
@@ -249,16 +330,20 @@ def product_op(pid):
         cache.clear()
         return "Deletion successful!"
 
-@app.route("/user-api/bookings/<int:uid>")
-def getBookings(uid):
+@app.route("/user-api/bookings")
+def getBookings():
     if request.method == "GET":
-        bookings = get_user_bookings(uid)
-        return bookings
+        token=request.headers.get("Authorization", "").split(" ")[-1]
+        if token:
+            decodedToken=jwt.decode(token,app.secret_key,algorithms=["HS256"])
+            user_id=get_user_id_by_token(decodedToken['token'])
+
+            return get_user_bookings(user_id)
     else:
         return "Invalid HTTP Request"
     
-@app.route("/user-api/bookings/<int:pid>",methods=["POST","DELETE"])
-def Cart(pid):
+@app.route("/user-api/bookings/<int:pid>",methods=["POST"])
+def addBookings(pid):
     if request.method=="POST":
         token=request.headers.get("Authorization", "").split(" ")[-1]
         if token:
@@ -280,12 +365,32 @@ def Cart(pid):
     else:
         return "Invalid HTTP Request"
 
+@app.route("/user-api/bookings/<int:bookingid>",methods=["GET","DELETE"])
+def cartActions(bookingid):
+    if request.method=="GET":
+        token=request.headers.get("Authorization", "").split(" ")[-1]
+        if token:
+            decodedToken=jwt.decode(token,app.secret_key,algorithms=["HS256"])
+            user_id=get_user_id_by_token(decodedToken['token'])
 
-
-@app.route("/user-api/bookings/<int:bookingid>",methods=["POST","DELETE"])
-def CartActions(bookingid):
-    if request.method=="POST":
-        pass
+            booking = get_booking_by_id(bookingid)
+            product = get_product_by_id(booking.product_id)
+            product_unit = product.unit
+            rate = product.rateperunit
+            quantity = booking.quantity_of_item
+            new_quantity = product.quantity - int(quantity)
+            if new_quantity>=0:
+                product.quantity = new_quantity
+                totalprice = int(quantity)*int(rate)
+                order = Order(userid=user_id, productid=product.pid, quantity_of_product=quantity, totalprice=totalprice, product_unit=product_unit, product_name=product.pname)
+                db.session.add(order)
+                db.session.delete(booking)
+                db.session.commit()
+                cache.clear()
+                return "Product successfully purchased!"
+        else:
+            return "User not authorized"
+        
     elif request.method=="DELETE":
         token=request.headers.get("Authorization", "").split(" ")[-1]
         if token:
@@ -297,8 +402,19 @@ def CartActions(bookingid):
     else:
         return "Invalid HTTP Request"
         
-# @app.route("/api/orders", methods = ["GET", "POST"])
-# def getOrders():
-#     if request.method == "GET":
-#         orders = Order.query.all()
-#         return [order.to_dict() for order in orders]
+@app.route("/api/orders")
+def getOrders():
+    if request.method == "GET":
+        token=request.headers.get("Authorization", "").split(" ")[-1]
+        if token:
+            decodedToken=jwt.decode(token,app.secret_key,algorithms=["HS256"])
+            user_id=get_user_id_by_token(decodedToken['token'])
+            if get_user_by_id(user_id).role=="user":
+                orders = get_orders_by_user_id(user_id)
+                return orders
+            else:
+                return "User operation not allowed"
+        else:
+            return "User not authorized"
+    else:
+        return "Invalid HTTP Request"

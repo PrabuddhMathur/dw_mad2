@@ -2,7 +2,6 @@ import { createRouter, createWebHistory } from 'vue-router'
 import LoginView from '../views/LoginView.vue'
 import RegisterView from '../views/RegisterView.vue'
 import CartView from '../views/CartView.vue'
-import AdminSummaryView from '../components/admin/AdminSummaryView.vue'
 import OrdersView from '../views/OrdersView.vue'
 import SearchView from '../views/SearchView.vue'
 import AdminApprovalView from '../components/admin/AdminApprovalView.vue'
@@ -81,22 +80,17 @@ const router = createRouter({
     {
       path: '/cart',
       name: 'cart',
-      component: CartView
-    },
-    {
-      path: '/summary',
-      name: 'summary',
-      component: AdminSummaryView
+      component:CartView
     },
     {
       path: '/orders',
       name: 'orders',
-      component: OrdersView
+      component:OrdersView
     },
     {
       path: '/search',
       name: 'search',
-      component: SearchView
+      component:SearchView
     },
     {
       path: '/approve',

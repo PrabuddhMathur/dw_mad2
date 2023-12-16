@@ -1,9 +1,9 @@
 <template>
-    <div class="modal fade" :id="product.pid +'AddToCartModal'">
+    <div class="modal fade" :id="this.booking.bookingid +'ReviewCartModal'">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h1 class="modal-title fs-5">Add To Cart: {{ product.pname }}</h1>
+                    <h1 class="modal-title fs-5">Add To Cart: {{ this.booking.item_name }}</h1>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <form>
@@ -13,22 +13,22 @@
                             <label for="Availability">Availability</label>
                         </div>
                         <div class="form-floating mb-3">
-                            <input v-model="quantity" type="number" class="form-control" :id="'Quantity'+ product.pid" name="Quantity" min="1" :max="product.quantity">
-                            <label :for="'Quantity'+ product.pid">Quantity</label>
+                            <input v-model="quantity" type="number" class="form-control" :id="'Quantity'+ this.booking.bookingid" name="Quantity" min="1" :max="this.booking.quantity">
+                            <label :for="'Quantity'+ this.booking.bookingid">Quantity</label>
                         </div>
                         <div class="form-floating mb-3">
-                            <input type="number" class="form-control" :value="product.rateperunit" :id="'Price'+product.pid" readonly>
-                            <label :for="'Price'+product.pid">Price</label>
+                            <input type="number" class="form-control" :value="this.booking.rateperunit" :id="'Price'+this.booking.bookingid" readonly>
+                            <label :for="'Price'+this.booking.bookingid">Price</label>
                         </div>
                         <div class="form-floating mb-3">
-                            <input type="number" name="Total" class="form-control" :value="quantity*product.rateperunit" :id="'Total'+product.pid" readonly>
-                            <label :for="'Total'+product.pid">Total</label>
+                            <input type="number" name="Total" class="form-control" :value="quantity*this.booking.rateperunit" :id="'Total'+this.booking.bookingid" readonly>
+                            <label :for="'Total'+this.booking.bookingid">Total</label>
                             
                         </div>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                        <button @click="addtoCart(product.pid)" type="submit" class="btn btn-primary">Submit</button>
+                        <button @click="reviewCart(booking.bookingid)" type="submit" class="btn btn-primary">Submit</button>
                     </div>
                 </form>
             </div>
@@ -39,31 +39,24 @@
 import axios from 'axios';
     export default {
         props: {
-            product:{
+            booking:{
                 type: Object,
                 required: true
-            },
-            category_name:{
-                type:String,
-                required:true
             }
         },
         data(){
             return{
                 userSession: JSON.parse(localStorage.getItem("userSession")) || null,
-                quantity:'',
+                quantity:this.booking.quantity_of_item,
             }
         },
         methods:{
-            async addtoCart(pid){
+            async reviewCart(bookingid){
                 if (this.userSession){
                     axios.defaults.headers.common["Authorization"] = `Bearer ${this.userSession.token}`;
                     await axios
-                    .post("http://127.0.0.1:1430/user-api/bookings/"+pid,{
+                    .post("http://127.0.0.1:1430/user-api/bookings/"+bookingid,{
                         quantity:this.quantity,
-                        product_name:this.product.pname,
-                        category_name:this.category_name,
-                        pid:this.product.pid,
                     })
                     .then((response)=>response.data)
                     .then((response)=>{console.log(response)})

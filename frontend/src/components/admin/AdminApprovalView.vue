@@ -126,12 +126,15 @@ export default {
     },
     data() {
         return {
+            userSession: JSON.parse(localStorage.getItem("userSession")) || null,
             categories: [],
             users: []
         }
     },
     methods: {
         async fetchCategories() {
+            if (this.userSession){
+                    axios.defaults.headers.common["Authorization"] = `Bearer ${this.userSession.token}`;
             await axios
             .get("http://127.0.0.1:1430/admin-api/approval/categories")
                 .then((response) => response)
@@ -142,8 +145,11 @@ export default {
                 .catch((error)=>{
                     console.error("Category fetch error: ", error)
                 });
+            }else{alert("Please login and try again!")}
         },
         async fetchUsers() {
+            if (this.userSession){
+                    axios.defaults.headers.common["Authorization"] = `Bearer ${this.userSession.token}`;
             await axios
             .get("http://127.0.0.1:1430/admin-api/approval/users")
                 .then((response) => response)
@@ -154,15 +160,21 @@ export default {
                 .catch((error)=>{
                     console.error("User fetch error: ", error)
                 });
+            }else{alert("Please login and try again!")}
         },
         async approveUser(user_id){
+            if (this.userSession){
+                    axios.defaults.headers.common["Authorization"] = `Bearer ${this.userSession.token}`;
             await axios
             .get("http://127.0.0.1:1430/admin-api/approval/user/"+user_id)
                 .then((response)=>response)
                 .then((response)=>response.data)
                 .then((results)=>{alert(results)})
+        }else{alert("Please login and try again!")}
         },
         async deleteUser(user_id){
+            if (this.userSession){
+                    axios.defaults.headers.common["Authorization"] = `Bearer ${this.userSession.token}`;
             await axios
             .delete("http://127.0.0.1:1430/admin-api/approval/user/"+user_id)
                 .then((response)=>response)
@@ -171,18 +183,24 @@ export default {
                     this.users = this.users.filter(user => user.id !== user_id);
                     console.log(results)
                     })
+        }else{alert("Please login and try again!")}
         },
         async approveCategory(approval_id){
+            if (this.userSession){
+                    axios.defaults.headers.common["Authorization"] = `Bearer ${this.userSession.token}`;
             await axios
             .get("http://127.0.0.1:1430/admin-api/approval/category/"+approval_id)
                 .then((response)=>response)
                 .then((response)=>response.data)
                 .then((results)=>{
-                    this.categories = this.categories.filter(category => category.category_id !== approval_id);
-                    console.log(results)
+                    this.categories = this.categories.filter(category => category.id !== approval_id);
+                    alert(results)
                     })
+        }else{alert("Please login and try again!")}
         },
         async deleteCategory(approval_id){
+            if (this.userSession){
+                    axios.defaults.headers.common["Authorization"] = `Bearer ${this.userSession.token}`;
             await axios
             .delete("http://127.0.0.1:1430/admin-api/approval/category/"+approval_id)
                 .then((response)=>response)
@@ -191,10 +209,11 @@ export default {
                     if ("error" in results){
                         throw results
                     }else{
-                        this.categories = this.categories.filter(category => category.category_id !== approval_id);
+                        this.categories = this.categories.filter(category => category.id !== approval_id);
                         console.log(results)
                     }
                 })
+        }else{alert("Please login and try again!")}
         }
     },
     async beforeMount() {

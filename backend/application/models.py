@@ -31,6 +31,16 @@ class Product(db.Model):
     category_id = db.Column(db.Integer, db.ForeignKey("categories.cid", ondelete = "CASCADE"))
     bookings = db.relationship("Booking", backref = "product", cascade = "all, delete", passive_deletes = True)
 
+    def to_booking_dict(self):
+        return {
+            "pid":self.pid,
+            "pname":self.pname,
+            "manf_date":self.manf_date,
+            "exp_date":self.exp_date,
+            "unit":self.unit,
+            "rateperunit":self.rateperunit,
+            "quantity":self.quantity,
+        }
     def to_dict(self):
         return {
             "pid":self.pid,
@@ -83,13 +93,17 @@ class Booking(db.Model):
     item_name = db.Column(db.String(50))
 
     def to_dict(self):
+        product=Product.query.filter_by(pid=self.product_id).first()
+
         return {
             "bookingid":self.bookingid,
             "user_id":self.user_id,
             "product_id":self.product_id,
             "category_name":self.category_name,
             "quantity_of_item":self.quantity_of_item,
-            "item_name":self.item_name
+            "item_name":self.item_name,
+            "product":product.to_booking_dict()
+            
 
         }
 

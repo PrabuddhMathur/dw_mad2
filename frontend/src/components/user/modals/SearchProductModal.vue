@@ -15,7 +15,7 @@
                                 <!-- <option value="{{ product.pname'] }}"> -->
                                 
                             </datalist> 
-                            <label for="product">Product Name</label> -->
+                            <label for="product">Product Name</label> 
                         </div>
                     </div>
                     <div class="modal-footer">

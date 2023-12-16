@@ -7,10 +7,10 @@ def get_all_categories():
     return [category.to_dict() for category in categories]
     
 
-@cache.memoize()
-def get_all_products():
-    products = Product.query.all()
-    return products
+# @cache.memoize()
+# def get_all_products():
+#     products = Product.query.all()
+#     return products
 
 @cache.memoize()
 def get_booking_by_id(bookingid):
@@ -18,9 +18,9 @@ def get_booking_by_id(bookingid):
     return booking.to_dict()
 
 @cache.memoize()
-def get_order_by_id(orderid):
-    order = Order.query.filter_by(orderid=orderid).first()
-    return order.to_dict()
+def get_orders_by_user_id(user_id):
+    orders = Order.query.filter_by(user_id=user_id).all()
+    return [order.to_dict() for order in orders]
 
 
 @cache.memoize()

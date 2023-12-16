@@ -27,17 +27,21 @@ import axios from 'axios';
     export default {
         data(){
             return {
+                userSession: JSON.parse(localStorage.getItem("userSession")) || null,
                 cname:"",
             }
         },
         methods:{
             async addCategory(){
-                await axios
-                .post("http://127.0.0.1:1430/api/categories",{
-                    cname:this.cname
-                })
-                .then((response)=>response.data)
-                .then((response)=>{alert(response)})
+                if (this.userSession){
+                    axios.defaults.headers.common["Authorization"] = `Bearer ${this.userSession.token}`;
+                    await axios
+                    .post("http://127.0.0.1:1430/api/categories",{
+                        cname:this.cname
+                    })
+                    .then((response)=>response.data)
+                    .then((response)=>{alert(response)})
+                }else{alert("Please login and try again!")}
             }
         }
     }

@@ -1,6 +1,5 @@
 <template>
     <div>
-        <!-- <FlashErrorView /> -->
         <div class="container-fluid">
         <div class="row">        
             <div class="col-6 d-flex justify-content-start"></div>      
@@ -52,7 +51,6 @@
             
                     <div class="form-group text-center"><button type="submit" class="btn btn-dark">Register</button></div>
                     <br><br>Already a member? <a href="/login">Sign In!</a>
-                    <!-- <br><br>Signing In as Manager?<a type="button" href="/admin_login">Admin Login</a> -->
                 </form>            
             </div>
         </div>
@@ -86,35 +84,25 @@ export default {
             if (this.password != this.password2) {
                 alert("Passwords do not match!");
             }else{
-            await axios
-            .post("http://127.0.0.1:1430/api/register", {
-                username: this.username,
-                password: this.password,
-                fname: this.fname,
-                lname: this.lname,
-                role: this.role
-            })
-            .then((response)=>response.data)
-            .then((response) => {
-                if ("Error" in response){
-                        throw response
-                    }
-                    else{return response}
-            })
-            .then((response) => {
-					this.token = response.token
-					this.expiry = response.expiry
-					this.userSession = {
-					token: this.token,
-					expiry: this.expiry,
-					};
-					localStorage.setItem("userSession", JSON.stringify(this.userSession));
-					location.href="/login"
-					
-					})
-					.catch((response)=>{
-						alert(response['message'])
-					})
+                await axios
+                .post("http://127.0.0.1:1430/api/register", {
+                    username: this.username,
+                    password: this.password,
+                    fname: this.fname,
+                    lname: this.lname,
+                    role: this.role
+                })
+                .then((response)=>response.data)
+                .then((response) => {
+                    if ("Error" in response){
+                            throw response
+                        }
+                        else{return response}
+                })
+                .catch((response)=>{
+                    alert(response['message'])
+                })
+                location.href="/login"
             }
         }
     }

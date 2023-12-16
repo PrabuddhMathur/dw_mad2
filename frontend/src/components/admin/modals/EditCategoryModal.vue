@@ -33,17 +33,21 @@ import axios from 'axios';
         },
         data(){
             return {
+                userSession: JSON.parse(localStorage.getItem("userSession")) || null,
                 updated_cname:this.category.cname,
             }
         },
         methods:{
             async editCategory(cid){
-                await axios
-                .post("http://127.0.0.1:1430/admin-api/category/"+cid,{
-                    cname:this.updated_cname
-                })
-                .then((response)=>response.data)
-                .then((response)=>{console.log(response)})
+                if (this.userSession){
+                axios.defaults.headers.common["Authorization"] = `Bearer ${this.userSession.token}`;
+                    await axios
+                    .post("http://127.0.0.1:1430/admin-api/category/"+cid,{
+                        cname:this.updated_cname
+                    })
+                    .then((response)=>response.data)
+                    .then((response)=>{console.log(response)})
+                }else{alert("Please login and try again!")}
             }
         }
     }

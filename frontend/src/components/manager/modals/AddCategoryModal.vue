@@ -15,7 +15,7 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                        <button @click="addCategoryRequest()" type="submit" class="btn btn-primary">Submit Request</button>
+                        <button @click="addCategoryRequest()" class="btn btn-primary">Submit Request</button>
                     </div>
                 </form>
             </div>
