@@ -5,12 +5,12 @@ from application.database import db
 from application.models import *
 from flask_cors import CORS
 import secrets
+from application import workers
 
 app=None
 
 def create_app():
     app=Flask(__name__)
-    # CORS(app)
     CORS(app, origins='http://localhost:5173')
     app.config.from_object(Config)
     app.secret_key=SECRET_KEY
@@ -41,9 +41,18 @@ def create_app():
         db.session.commit()
 
     app.app_context().push()
-    return app
 
-app = create_app()
+     # Initialize Celery
+    celery = workers.celery
+    celery.conf.update(
+        broker_url=app.config["CELERY_BROKER_URL"],
+        result_backend=app.config["CELERY_RESULT_BACKEND"],
+    )
+    celery.Task = workers.ContextTask
+    app.app_context().push()
+    return app,celery
+
+app,celery = create_app()
 
 from application.apis import *
 
