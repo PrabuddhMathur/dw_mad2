@@ -1,7 +1,6 @@
 <template>
     <div>
         <Navbar />
-            <!-- Button trigger modal -->
         <div class="text-center my-4" >
             <button type="button" class="btn btn-dark" data-bs-toggle="modal" data-bs-target="#AddCategoryModal"><i class="fa fa-plus"></i> Add Category</button>
         </div>
@@ -16,7 +15,10 @@
                         <EditCategoryModal :category="category" />
                         <a @click="deleteCategoryApproval(category.cid)" class="btn btn-danger" type="submit"><i class="fa-solid fa-trash-can"></i></a>
                     </div>
-                    <div class="d-flex col-7 align-items-center">
+                    <div class="d-flex col-3 p-0 m-0">
+                        <button @click="exportDetails(category.cid)" class="btn btn-dark ms-auto" type="button">Export Details</button>
+                    </div>
+                    <div class="d-flex col-3 p-0 m-0">
                         <button class="btn btn-dark ms-auto" type="button" data-bs-toggle="modal" :data-bs-target="'#'+ category.cid +'AddProductModal'"><i class="fa-solid fa-circle-plus"></i> Add Product</button>
                     </div>
                     <AddProductModal :category_id="category.cid" />
@@ -32,7 +34,6 @@
                         </div>
                         <div class="card-footer d-flex justify-content-center">                    
                             <button class="btn btn-outline-dark btn-sm mx-2" type="button" data-bs-toggle="modal" :data-bs-target="'#'+ product.pid + 'EditProductModal'"><i class="fa-solid fa-pen"></i></button>
-                            <!-- EditProductModal -->
                             <EditProductModal :product="product" />
                             <a @click="deleteProduct(product.pid)" class="btn btn-outline-danger btn-sm" type="submit"><i class="fa-solid fa-trash-can"></i></a>                    
                         </div>
@@ -45,8 +46,6 @@
         <div v-else class="container mb-4">
             <h6>No categories created yet. Click on Add Category to create one!</h6>
         </div>
-        <!-- {% endfor %} -->
-
     </div>
     
 </template>
@@ -115,10 +114,19 @@ export default {
                 console.log(results)
                 })
             }else{alert("Please login and try again!")}
+        },
+        async exportDetails(cid){
+            if (this.userSession){
+                    axios.defaults.headers.common["Authorization"] = `Bearer ${this.userSession.token}`;
+            await axios
+            .get("http://127.0.0.1:1430/manager-api/analytics/category/"+cid)
+            .then((response) => response)
+            .then((response) => response.data)
+            .then((results) => {
+                alert(results)
+                })
+            }else{alert("Please login and try again!")}
         }
-    },
-    computed:{
-        getCategories(){return this.categories;}
     },
     async beforeMount() {
         await this.fetchCategories();

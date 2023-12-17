@@ -4,6 +4,7 @@ from application.data_access import *
 from passlib.hash import pbkdf2_sha256 as passhash
 from application.cache import cache
 import jwt, secrets,datetime
+from application import tasks
 
 @app.route("/api/categories", methods = ["GET", "POST"])
 def getCategories():
@@ -207,6 +208,7 @@ def userid_approved(uid):
                 user=get_user_by_id(uid)
                 user.approved=True
                 db.session.commit()
+                tasks.sendManagerConformation.delay(user.username)
                 cache.clear()
 
                 return f'Manager {user.username} request approved!'
@@ -482,7 +484,6 @@ def buyAll():
             return "User not authorized"
     else:
         return "Invalid HTTP Request"
-        
 
 @app.route("/api/products", methods = ["GET"])
 def getProducts():
@@ -519,6 +520,24 @@ def search_products():
             product_name = data["product"]
             products = Product.query.filter(Product.pname.ilike(f"%{product_name}%"))
             return [i.to_dict() for i in products]
+        else:
+            return "User not authorized"
+    else:
+        return "Invalid HTTP Request"
+
+@app.route("/manager-api/analytics/category/<int:cid>", methods = ["GET"])
+def export_category(cid):
+    if request.method=="GET":
+        token=request.headers.get("Authorization", "").split(" ")[-1]
+        if token:
+            decodedToken=jwt.decode(token,app.secret_key,algorithms=["HS256"])
+
+            user_id=get_user_id_by_token(decodedToken['token'])
+            if get_user_by_id(user_id).role=="manager":
+                tasks.export_category_csv.delay(cid,user_id)
+                return "Exported CSV send via email!"
+            else:
+                return "User operation not allowed"
         else:
             return "User not authorized"
     else:
