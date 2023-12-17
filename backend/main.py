@@ -13,6 +13,7 @@ app=None
 def create_app():
     app=Flask(__name__)
     CORS(app, origins='http://localhost:5173')
+    # CORS(app)
     app.config.from_object(Config)
     app.secret_key=SECRET_KEY
     db.init_app(app)

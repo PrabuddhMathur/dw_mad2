@@ -122,9 +122,7 @@ export default {
             .get("http://127.0.0.1:1430/manager-api/analytics/category/"+cid)
             .then((response) => response)
             .then((response) => response.data)
-            .then((results) => {
-                alert(results)
-                })
+            .then((results) => {alert(results)})
             }else{alert("Please login and try again!")}
         }
     },

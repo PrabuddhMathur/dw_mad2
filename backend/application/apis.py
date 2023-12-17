@@ -146,6 +146,16 @@ def role():
     role=get_user_by_id(user_id).role
     return {"role":role}
 
+@app.route("/api/username")
+def username():
+    token=request.headers.get("Authorization", "").split(" ")[-1]
+    decodedToken=jwt.decode(token,app.secret_key,algorithms=["HS256"])
+    user_id=get_user_id_by_token(decodedToken['token'])
+    fname=User.query.filter_by(id=user_id).first().fname
+    lname=User.query.filter_by(id=user_id).first().lname
+    username=fname+" "+lname
+    return {"username":username}
+
 @app.route("/admin-api/approval/users")
 def user_approvals():
     if request.method=="GET":
