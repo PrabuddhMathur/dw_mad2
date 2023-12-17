@@ -5,6 +5,7 @@ import CartView from '../views/CartView.vue'
 import OrdersView from '../views/OrdersView.vue'
 import SearchView from '../views/SearchView.vue'
 import AdminApprovalView from '../components/admin/AdminApprovalView.vue'
+import ManagerApprovalView from '../components/manager/ManagerApprovalView.vue'
 import axios from 'axios';
 
 const router = createRouter({
@@ -90,12 +91,21 @@ const router = createRouter({
     {
       path: '/search',
       name: 'search',
-      component:SearchView
+      component:SearchView,
+      props: (route) => ({
+        search_by:route.query.search_by,
+        query: route.query.q, // Access the search query passed in the URL
+      }),
     },
     {
       path: '/approve',
       name: 'approve',
       component: AdminApprovalView
+    },
+    {
+      path: '/approvals',
+      name: 'approvals',
+      component: ManagerApprovalView
     },
     {
       path: '/logout',

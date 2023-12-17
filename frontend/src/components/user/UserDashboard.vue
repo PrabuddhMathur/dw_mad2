@@ -4,10 +4,10 @@
         <div class="text-center my-4" >
             <button class="btn btn-dark" style="margin-left: 5px" data-bs-toggle="modal" data-bs-target="#SearchCategoryModal">Search Category</button>
             <!-- Search Category Modal -->
-            <SearchCategoryModal />
+            <SearchCategoryModal :categories=categories />
             <button class="btn btn-dark" style="margin-left: 5px" data-bs-toggle="modal" data-bs-target="#SearchProductModal">Search Product</button>
             <!-- Search Product Modal -->
-            <SearchProductModal />
+            <SearchProductModal :products=products />
         </div>
         <!-- {% for category in categories %} -->
         <div v-for="category in categories" :key="category.cid">
@@ -64,28 +64,46 @@ export default {
     },
     data() {
         return {
-            categories: []
+            userSession: JSON.parse(localStorage.getItem("userSession")) || null,
+            categories: [],
+            products: []
         }
     },
     methods: {
         async fetchCategories() {
-            await axios
-            .get("http://127.0.0.1:1430/api/categories")
-                .then((response) => response)
-                .then((response) => response.data)
-                .then((results) => {
-                    this.categories = results;
-                })
-                .catch(()=>{
-                    console.error("Category error: ", error)
-                });
+            if (this.userSession){
+                    axios.defaults.headers.common["Authorization"] = `Bearer ${this.userSession.token}`;
+                await axios
+                .get("http://127.0.0.1:1430/api/categories")
+                    .then((response) => response)
+                    .then((response) => response.data)
+                    .then((results) => {
+                        this.categories = results;
+                    })
+                    .catch(()=>{
+                        console.error("Category error: ", error)
+                    });
+            }else{alert("Please login and try again!")}
+        },
+        async fetchProducts() {
+            if (this.userSession){
+                    axios.defaults.headers.common["Authorization"] = `Bearer ${this.userSession.token}`;
+                await axios
+                .get("http://127.0.0.1:1430/api/products")
+                    .then((response) => response)
+                    .then((response) => response.data)
+                    .then((results) => {
+                        this.products = results;
+                    })
+                    .catch(()=>{
+                        console.error("Product error: ", error)
+                    });
+            }else{alert("Please login and try again!")}
         }
-    },
-    computed:{
-        getCategories(){return this.categories;}
     },
     async beforeMount() {
         await this.fetchCategories();
+        await this.fetchProducts();
     },
     mounted() {
 		document.title = "User Dashboard";

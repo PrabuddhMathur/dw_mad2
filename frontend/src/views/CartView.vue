@@ -7,24 +7,24 @@
     </div>
     <!-- loop for products in specific category -->
     
-    <template v-if="bookings.length > 0">
+    <div v-if="bookings.length > 0">
         <div v-for="booking in bookings" :key="booking.bookingid">
             <div class="row">
                 <div class="col">
                     <div class="card">
                         <div class="card-body">
                             <div class="row">
-                                <div class="col-3">
+                                <div class="col-3 text-center">
                                     <b>{{ booking.product.pname }}</b>
                                 </div>
-                                <div class="col-2">
+                                <div class="col-2 text-center">
                                     {{ booking.quantity_of_item }} {{ booking.product.unit }}
                                 </div>
-                                <div class="col-2">
+                                <div class="col-2 text-center">
                                     Rs. {{ Number(booking.quantity_of_item)*Number(booking.product.rateperunit) }}
                                 </div>
                                 
-                                <div v-if="booking.product.quantity > 0">
+                                <template v-if="booking.product.quantity > 0">
                                     <div class="col-2">
                                         <button class="btn btn-secondary btn-sm mx-auto d-grid col-12" type="button" data-bs-toggle="modal" :data-bs-target="'#'+ booking.bookingid +'ReviewCartModal'">Review</button>
                                     </div>
@@ -32,7 +32,7 @@
                                         <a @click="buyBooking(booking.bookingid)" class="btn btn-dark btn-sm mx-auto d-grid col-12">Buy</a>
                                     </div>
                                     <ReviewCartModal :booking="booking" />
-                                </div>
+                                </template>
                                 <div v-else class="col-4">
                                     <button class="btn btn-outline-dark btn-sm mx-auto d-grid col-12" type="button" disabled>Out Of Stock</button>
                                 </div>
@@ -46,7 +46,7 @@
                 </div>
             </div>
         </div>
-    </template>
+    </div>
 
     
     <div v-else class="container mb-4">
@@ -110,10 +110,10 @@ export default {
             if (this.userSession){
                     axios.defaults.headers.common["Authorization"] = `Bearer ${this.userSession.token}`;
                 await axios
-                .get("http://127.0.0.1:1430/user-api/bookings"+bookingid)
+                .get("http://127.0.0.1:1430/user-api/bookings/"+bookingid)
                     .then((response) => response)
                     .then((response) => response.data)
-                    .then((results) => {console.log(results)})
+                    .then((results) => {console.log(results);location.href="/orders"})
             }else{
                     alert("Please login and try again!")
                 }
@@ -122,10 +122,10 @@ export default {
             if (this.userSession){
                     axios.defaults.headers.common["Authorization"] = `Bearer ${this.userSession.token}`;
                 await axios
-                .delete("http://127.0.0.1:1430/user-api/bookings"+bookingid)
+                .delete("http://127.0.0.1:1430/user-api/bookings/"+bookingid)
                     .then((response) => response)
                     .then((response) => response.data)
-                    .then((results) => {console.log(results)})
+                    .then((results) => {alert(results)})
             }else{
                     alert("Please login and try again!")
                 }
@@ -133,8 +133,14 @@ export default {
         async buyAll(){
             if (this.userSession){
                     axios.defaults.headers.common["Authorization"] = `Bearer ${this.userSession.token}`;
-                    // Add function statement here
-            }else{alert("Please login and try again!")}
+                await axios
+                .get("http://127.0.0.1:1430/user-api/bookings/buyall")
+                    .then((response) => response)
+                    .then((response) => response.data)
+                    .then((results) => {alert(results)})
+            }else{
+                alert("Please login and try again!")
+                }
         }
     },
     async beforeMount(){

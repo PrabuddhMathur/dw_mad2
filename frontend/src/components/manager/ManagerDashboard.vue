@@ -23,8 +23,6 @@
                 </div>
                 <hr>
                 <div   v-if="category.products.length>0" class="row row-cols-2 row-cols-md-3 row-cols-lg-5  g-4">
-                    <!-- loop for products in specific category -->
-                    <!-- {% for product in category['products'] %} -->
                     <div v-for="product in category.products" :key="product" class="col">
                         <div class="card h-100">
                         <div class="card-body">
@@ -40,7 +38,6 @@
                         </div>
                         </div>
                     </div>
-                    <!-- {% endfor %} -->
                 </div>
                 <h6 v-else >No items here yet. Click on Add Product to add items!</h6>
             </div>
@@ -73,11 +70,14 @@ export default {
     },
     data() {
         return {
+            userSession: JSON.parse(localStorage.getItem("userSession")) || null,
             categories: []
         }
     },
     methods: {
         async fetchCategories() {
+            if (this.userSession){
+                    axios.defaults.headers.common["Authorization"] = `Bearer ${this.userSession.token}`;
             await axios
             .get("http://127.0.0.1:1430/api/categories")
                 .then((response) => response)
@@ -88,18 +88,24 @@ export default {
                 .catch(()=>{
                     console.error("Category error: ", error)
                 });
+            }else{alert("Please login and try again!")}
         },
         
         async deleteCategoryApproval(cid){
+            if (this.userSession){
+                    axios.defaults.headers.common["Authorization"] = `Bearer ${this.userSession.token}`;
             await axios
             .post("http://127.0.0.1:1430/manager-api/approval/category",{
                 cid:cid,
                 request_type:"Delete"
             })
             .then((response)=>response.data)
-            .then((response)=>{console.log(response)})
+            .then((response)=>{alert(response)})
+             }else{alert("Please login and try again!")}
         },
         async deleteProduct(pid){
+            if (this.userSession){
+                    axios.defaults.headers.common["Authorization"] = `Bearer ${this.userSession.token}`;
             await axios
             .delete("http://127.0.0.1:1430/manager-api/product/"+pid)
             .then((response)=>response)
@@ -108,6 +114,7 @@ export default {
                 // this.categories = this.categories.filter(category => category.cid !== cid);
                 console.log(results)
                 })
+            }else{alert("Please login and try again!")}
         }
     },
     computed:{

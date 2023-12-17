@@ -42,6 +42,7 @@ class Product(db.Model):
             "quantity":self.quantity,
         }
     def to_dict(self):
+        cname=Category.query.filter_by(cid=self.category_id).first().cname
         return {
             "pid":self.pid,
             "pname":self.pname,
@@ -50,6 +51,7 @@ class Product(db.Model):
             "unit":self.unit,
             "rateperunit":self.rateperunit,
             "quantity":self.quantity,
+            "cname":cname,
             "bookings":[booking.to_dict() for booking in self.bookings]
         }
 
@@ -57,9 +59,10 @@ class ApproveCategory(db.Model):
     __tablename__ = "approvecategories"
     id = db.Column(db.Integer, primary_key = True)
     category_id = db.Column(db.Integer, db.ForeignKey("categories.cid", ondelete = "CASCADE"))
-    cname = db.Column(db.String(150), unique=True)
-    updated_cname=db.Column(db.String(150), unique=True)
+    cname = db.Column(db.String(150))
+    updated_cname=db.Column(db.String(150))
     request_type=db.Column(db.String(150))
+    manager_id=db.Column(db.String(150))
 
     def to_dict(self):
         return {
@@ -67,7 +70,8 @@ class ApproveCategory(db.Model):
             "category_id":self.category_id,
             "cname":self.cname,
             "updated_cname":self.updated_cname,
-            "request_type":self.request_type
+            "request_type":self.request_type,
+            "manager_id":self.manager_id
         }
    
 class Category(db.Model):

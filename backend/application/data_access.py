@@ -5,27 +5,20 @@ from application.cache import cache
 def get_all_categories():
     categories = Category.query.all()
     return [category.to_dict() for category in categories]
-    
-
-# @cache.memoize()
-# def get_all_products():
-#     products = Product.query.all()
-#     return products
 
 @cache.memoize()
 def get_booking_by_id(bookingid):
     booking = Booking.query.filter_by(bookingid=bookingid).first()
-    return booking.to_dict()
+    return booking
 
 @cache.memoize()
 def get_orders_by_user_id(user_id):
-    orders = Order.query.filter_by(user_id=user_id).all()
+    orders = Order.query.filter_by(userid=user_id).all()
     return [order.to_dict() for order in orders]
-
 
 @cache.memoize()
 def get_user_bookings(user_id):
-    bookings = Booking.query.filter_by(user_id=user_id)
+    bookings = Booking.query.filter_by(user_id=user_id).all()
     return [booking.to_dict() for booking in bookings]
 
 @cache.memoize()
@@ -62,16 +55,6 @@ def get_status(user_id):
 def get_user_approval(status):
     users=User.query.filter_by(approved=status).all()
     return [user.to_dict() for user in users]
-
-# @cache.memoize()
-# def get_category_approval():
-#     categories=ApproveCategory.query.all()
-#     return [category.to_dict() for category in categories]
-
-# @cache.memoize()
-# def get_category_approval_by_id(approval_id):
-#     category=ApproveCategory.query.filter_by(id=approval_id).first()
-#     return category
             
 @cache.memoize()
 def get_category_by_id(id):

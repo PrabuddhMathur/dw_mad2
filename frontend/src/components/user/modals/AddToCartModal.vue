@@ -6,14 +6,14 @@
                     <h1 class="modal-title fs-5">Add To Cart: {{ product.pname }}</h1>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <form>
+                <form @submit.prevent="submitForm">
                     <div class="modal-body">
                         <div class="form-floating mb-3">
                             <input type="text" class="form-control" value='In Stock' id="Availability" readonly>
                             <label for="Availability">Availability</label>
                         </div>
                         <div class="form-floating mb-3">
-                            <input v-model="quantity" type="number" class="form-control" :id="'Quantity'+ product.pid" name="Quantity" min="1" :max="product.quantity">
+                            <input v-model="quantity" type="number" class="form-control" :id="'Quantity'+ product.pid" name="Quantity" :min="1" :max=product.quantity>
                             <label :for="'Quantity'+ product.pid">Quantity</label>
                         </div>
                         <div class="form-floating mb-3">
@@ -28,7 +28,7 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                        <button @click="addtoCart(product.pid)" type="submit" class="btn btn-primary">Submit</button>
+                        <button type="submit" class="btn btn-primary">Submit</button>
                     </div>
                 </form>
             </div>
@@ -55,6 +55,13 @@ import axios from 'axios';
             }
         },
         methods:{
+            submitForm() {
+                if (this.quantity < 1 || this.quantity > this.product.quantity) {
+                    alert('Invalid quantity. Please enter a quantity within the allowed range.');
+                    return;
+                }
+                this.addtoCart(this.product.pid);
+            },
             async addtoCart(pid){
                 if (this.userSession){
                     axios.defaults.headers.common["Authorization"] = `Bearer ${this.userSession.token}`;

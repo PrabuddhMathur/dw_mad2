@@ -206,14 +206,10 @@ export default {
                 .then((response)=>response)
                 .then((response)=>response.data)
                 .then((results)=>{
-                    if ("error" in results){
-                        throw results
-                    }else{
                         this.categories = this.categories.filter(category => category.id !== approval_id);
                         console.log(results)
-                    }
-                })
-        }else{alert("Please login and try again!")}
+                    })
+                }else{alert("Please login and try again!")}
         }
     },
     async beforeMount() {

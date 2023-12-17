@@ -40,7 +40,7 @@ import axios from 'axios';
                         cname:this.cname
                     })
                     .then((response)=>response.data)
-                    .then((response)=>{alert(response)})
+                    .then((response)=>{console.log(response)})
                 }else{alert("Please login and try again!")}
             }
         }

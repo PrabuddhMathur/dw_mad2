@@ -8,7 +8,7 @@
             </button>
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <div class="navbar-nav ms-auto mb-2 mb-lg-0 gap-2">
-                    <a href="/summary" class="btn btn-outline-light" style="margin-left: 5px">Summary</a>
+                    <a href="/approvals" class="btn btn-outline-light" style="margin-left: 5px">Approvals</a>
                     <a href="/logout" class="btn btn-outline-light" style="margin-left: 5px">Logout</a>
                 </div>
             </div>
