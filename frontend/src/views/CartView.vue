@@ -5,7 +5,6 @@
     <div class="text-center my-4" >
         <h3>Your Cart</h3>
     </div>
-    <!-- loop for products in specific category -->
     
     <div v-if="bookings.length > 0">
         <div v-for="booking in bookings" :key="booking.bookingid">
@@ -29,7 +28,7 @@
                                         <button class="btn btn-secondary btn-sm mx-auto d-grid col-12" type="button" data-bs-toggle="modal" :data-bs-target="'#'+ booking.bookingid +'ReviewCartModal'">Review</button>
                                     </div>
                                     <div class="col-2">
-                                        <a @click="buyBooking(booking.bookingid)" class="btn btn-dark btn-sm mx-auto d-grid col-12">Buy</a>
+                                        <a @click="buyBooking(booking.bookingid);getTotal()" class="btn btn-dark btn-sm mx-auto d-grid col-12">Buy</a>
                                     </div>
                                     <ReviewCartModal :booking="booking" />
                                 </template>
@@ -38,7 +37,7 @@
                                 </div>
                                 
                                 <div class="col-1">
-                                    <a @click="deleteBooking(booking.bookingid)" class="btn btn-danger btn-md mx-auto d-grid col-12"><i class="fa-solid fa-trash-can"></i></a>
+                                    <a @click="deleteBooking(booking.bookingid);getTotal()" class="btn btn-danger btn-md mx-auto d-grid col-12"><i class="fa-solid fa-trash-can"></i></a>
                                 </div>
                             </div>
                         </div>
@@ -47,35 +46,30 @@
             </div>
         </div>
     </div>
-
-    
     <div v-else class="container mb-4">
     <h6>Your cart seems to be empty at the moment.</h6>
     </div>
-          
     </div> 
-    <br><br><br>
-    <footer class="py-3 bg-dark bg-gradient text-white fixed-bottom">
-        <div class="container">
-            <div class="row">
-                <div class="d-flex col-6 justify-content-start">
-                    <!-- Grand Total : {{ total }} -->
-                </div>
-                <div class="d-flex col-6 justify-content-end">
-                    <a @click="buyAll()" class="btn btn-outline-light btn-sm mx-2" type="submit">Buy All</a>
+        <br><br><br>
+        <footer class="py-3 bg-dark bg-gradient text-white fixed-bottom">
+            <div class="container">
+                <div class="row">
+                    <div class="d-flex col-6 justify-content-start">
+                        Grand Total : {{ this.gtotal }}
+                    </div>
+                    <div class="d-flex col-6 justify-content-end">
+                        <a @click="buyAll()" class="btn btn-outline-light btn-sm mx-2" type="submit">Buy All</a>
+                    </div>
                 </div>
             </div>
-        </div>
-    </footer>
+        </footer>
     </div>
-
 </template>
 
 <script>
 import Navbar from '../components/user/Navbar.vue';
 import ReviewCartModal from '../components/user/modals/ReviewCartModal.vue';
 import axios from "axios";
-
 
 export default {
     components: {
@@ -85,7 +79,8 @@ export default {
     data() {
         return {
             userSession: JSON.parse(localStorage.getItem("userSession")) || null,
-            bookings: []
+            bookings: [],
+            gtotal:0
         }
     },
     methods: {
@@ -113,10 +108,12 @@ export default {
                 .get("http://127.0.0.1:1430/user-api/bookings/"+bookingid)
                     .then((response) => response)
                     .then((response) => response.data)
-                    .then((results) => {console.log(results);location.href="/orders"})
-            }else{
-                    alert("Please login and try again!")
-                }
+                    .then((results) => {
+                        console.log(results);
+                        this.bookings = this.bookings.filter(booking => booking.bookingid !== bookingid);
+                        this.$router.push("/orders")
+                    })
+            }else{alert("Please login and try again!")}
         },
         async deleteBooking(bookingid) {
             if (this.userSession){
@@ -125,10 +122,20 @@ export default {
                 .delete("http://127.0.0.1:1430/user-api/bookings/"+bookingid)
                     .then((response) => response)
                     .then((response) => response.data)
-                    .then((results) => {alert(results)})
-            }else{
-                    alert("Please login and try again!")
-                }
+                    .then((results) => {
+                        console.log(results);
+                        // this.bookings = this.bookings.filter(booking => booking.bookingid !== bookingid);
+                        location.href="/cart"
+                    })
+            }else{alert("Please login and try again!")}
+        },
+        getTotal(){
+            this.gtotal=0
+            for (const booking of this.bookings){
+                if (booking.product.quantity>0)
+                    this.gtotal+= booking.quantity_of_item*booking.product.rateperunit
+                
+            }
         },
         async buyAll(){
             if (this.userSession){
@@ -137,17 +144,16 @@ export default {
                 .get("http://127.0.0.1:1430/user-api/bookings/buyall")
                     .then((response) => response)
                     .then((response) => response.data)
-                    .then((results) => {alert(results)})
-            }else{
-                alert("Please login and try again!")
-                }
+                    .then((results) => {console.log(results);this.$router.push("/orders")})
+            }else{alert("Please login and try again!")}
         }
     },
     async beforeMount(){
         await this.fetchBookings();
+        this.getTotal(); 
     },
     mounted(){
         document.title="Cart"
-    }
+    },
 }
 </script>

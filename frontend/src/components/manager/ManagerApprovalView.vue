@@ -5,24 +5,23 @@
             <h3>Pending Category Management Requests</h3>
         </div>
         <div class="container mb-4">
-                    <div class="row">
-                        <div class="col">
-                            <div class="card">
-                                <div class="card-body">
-                                    <div class="row">
-                                        <div class="col-4 text-center">
-                                            <h5>Category Name</h5>
-                                        </div>
-                                        <div class="col-8 text-center">
-                                            <h5>Request</h5>
-                                        </div>
-                                    </div>
+            <div class="row">
+                <div class="col">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-4 text-center">
+                                    <h5>Category Name</h5>
+                                </div>
+                                <div class="col-8 text-center">
+                                    <h5>Request</h5>
                                 </div>
                             </div>
                         </div>
                     </div>
+                </div>
+            </div>
         </div>
-        <!-- loop for products in specific category -->
         <div v-if="categories.length > 0" class="container mb-4">
                 <div v-for="category in categories" :key="category.id">
                     <div class="row">

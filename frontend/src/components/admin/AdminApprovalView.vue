@@ -25,7 +25,6 @@
                 </div>
             </div>               
         </div>
-        <!-- loop for products in specific category -->
         <div v-if="users.length > 0" class="container mb-4">
                 <div v-for="user in users" :key="user.id">
                     <div class="row">
@@ -60,27 +59,26 @@
             <h3>Category Management Requests</h3>
         </div>
         <div class="container mb-4">
-                    <div class="row">
-                        <div class="col">
-                            <div class="card">
-                                <div class="card-body">
-                                    <div class="row">
-                                        <div class="col-2 text-center">
-                                            <h5>Category Name</h5>
-                                        </div>
-                                        <div class="col-8 text-center">
-                                            <h5>Request</h5>
-                                        </div>
-                                        <div class="col-2 text-center">
-                                            <h5>Action</h5>
-                                        </div>
-                                    </div>
+            <div class="row">
+                <div class="col">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-2 text-center">
+                                    <h5>Category Name</h5>
+                                </div>
+                                <div class="col-8 text-center">
+                                    <h5>Request</h5>
+                                </div>
+                                <div class="col-2 text-center">
+                                    <h5>Action</h5>
                                 </div>
                             </div>
                         </div>
                     </div>
+                </div>
+            </div>
         </div>
-        <!-- loop for products in specific category -->
         <div v-if="categories.length > 0" class="container mb-4">
                 <div v-for="category in categories" :key="category.id">
                     <div class="row">
@@ -169,7 +167,10 @@ export default {
             .get("http://127.0.0.1:1430/admin-api/approval/user/"+user_id)
                 .then((response)=>response)
                 .then((response)=>response.data)
-                .then((results)=>{alert(results)})
+                .then((results)=>{
+                    this.users = this.users.filter(user => user.id !== user_id);
+                    console.log(results)
+                })
         }else{alert("Please login and try again!")}
         },
         async deleteUser(user_id){
@@ -194,7 +195,7 @@ export default {
                 .then((response)=>response.data)
                 .then((results)=>{
                     this.categories = this.categories.filter(category => category.id !== approval_id);
-                    alert(results)
+                    console.log(results)
                     })
         }else{alert("Please login and try again!")}
         },

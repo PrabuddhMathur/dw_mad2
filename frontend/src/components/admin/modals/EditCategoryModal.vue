@@ -15,9 +15,9 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                        <button @click="editCategory(category.cid)" type="submit" class="btn btn-primary">Save changes</button>
+                        <button @click="editCategory(category.cid)" type="submit" class="btn btn-primary" data-bs-dismiss="modal">Save changes</button>
                     </div>
-            </form>
+                </form>
             </div>
         </div>
     </div>

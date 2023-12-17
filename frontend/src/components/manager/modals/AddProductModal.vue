@@ -41,7 +41,7 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                        <button @click="addProduct()" type="submit" class="btn btn-primary">Submit</button>
+                        <button @click="addProduct()" type="submit" class="btn btn-primary" data-bs-dismiss="modal">Submit</button>
                     </div>
                 </form>
             </div>
@@ -59,6 +59,7 @@ import axios from 'axios';
         },
         data(){
             return {
+                userSession: JSON.parse(localStorage.getItem("userSession")) || null,
                 pname:"",
                 manf_date:"",
                 exp_date:"",
@@ -69,6 +70,8 @@ import axios from 'axios';
         },
         methods:{
             async addProduct(){
+                if (this.userSession){
+                    axios.defaults.headers.common["Authorization"] = `Bearer ${this.userSession.token}`;
                 await axios
                 .post("http://127.0.0.1:1430/manager-api/product/add",{
                     category_id:this.category_id,
@@ -81,6 +84,7 @@ import axios from 'axios';
                 })
                 .then((response)=>response.data)
                 .then((response)=>{alert(response)})
+                }else{alert("Please login and try again!")}
             }
         }
 }

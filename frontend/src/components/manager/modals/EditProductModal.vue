@@ -41,7 +41,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button @click="editProduct(product.pid)" type="submit" class="btn btn-primary">Submit</button>
+                    <button @click="editProduct(product.pid)" type="submit" class="btn btn-primary" data-bs-dismiss="modal">Submit</button>
                 </div>
             </form>
         </div>
@@ -59,6 +59,7 @@ import axios from 'axios';
         },
         data(){
             return {
+                userSession: JSON.parse(localStorage.getItem("userSession")) || null,
                 updated_pname:this.product.pname,
                 updated_manf_date:new Date(this.product.manf_date).toISOString().split('T')[0],
                 updated_exp_date:new Date(this.product.exp_date).toISOString().split('T')[0],
@@ -69,6 +70,8 @@ import axios from 'axios';
         },
         methods:{
             async editProduct(pid){
+                if (this.userSession){
+                    axios.defaults.headers.common["Authorization"] = `Bearer ${this.userSession.token}`;
                 await axios
                 .post("http://127.0.0.1:1430/manager-api/product/"+pid,{
                     pname:this.updated_pname,
@@ -80,7 +83,8 @@ import axios from 'axios';
                 })
                 .then((response)=>response.data)
                 .then((response)=>{console.log(response)})
-            }
+            }else{alert("Please login and try again!")}
         }
     }
+}
 </script>

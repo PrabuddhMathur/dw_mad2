@@ -13,22 +13,22 @@
                             <label for="Availability">Availability</label>
                         </div>
                         <div class="form-floating mb-3">
-                            <input v-model="quantity" type="number" class="form-control" :id="'Quantity'+ this.booking.bookingid" name="Quantity" min="1" :max="this.booking.product_id.quantity">
+                            <input v-model="quantity" type="number" class="form-control" :id="'Quantity'+ this.booking.bookingid" name="Quantity" :min="1" :max=this.booking.product.quantity>
                             <label :for="'Quantity'+ this.booking.bookingid">Quantity</label>
                         </div>
                         <div class="form-floating mb-3">
-                            <input type="number" class="form-control" :value="this.booking.rateperunit" :id="'Price'+this.booking.bookingid" readonly>
+                            <input type="number" class="form-control" :value="this.booking.product.rateperunit" :id="'Price'+this.booking.bookingid" readonly>
                             <label :for="'Price'+this.booking.bookingid">Price</label>
                         </div>
                         <div class="form-floating mb-3">
-                            <input type="number" name="Total" class="form-control" :value="quantity*this.booking.rateperunit" :id="'Total'+this.booking.bookingid" readonly>
+                            <input type="number" name="Total" class="form-control" :value="quantity*Number(this.booking.product.rateperunit)" :id="'Total'+this.booking.bookingid" readonly>
                             <label :for="'Total'+this.booking.bookingid">Total</label>
                             
                         </div>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                        <button type="submit" class="btn btn-primary">Submit</button>
+                        <button type="submit" class="btn btn-primary" data-bs-dismiss="modal">Submit</button>
                     </div>
                 </form>
             </div>
@@ -52,7 +52,7 @@ import axios from 'axios';
         },
         methods:{
             submitForm() {
-                if (this.quantity < 1 || this.quantity > this.booking.product_id.quantity) {
+                if (this.quantity < 1 || this.quantity > this.booking.product.quantity) {
                     alert('Invalid quantity. Please enter a quantity within the allowed range.');
                     return;
                 }
@@ -62,8 +62,8 @@ import axios from 'axios';
                 if (this.userSession){
                     axios.defaults.headers.common["Authorization"] = `Bearer ${this.userSession.token}`;
                     await axios
-                    .post("http://127.0.0.1:1430/user-api/bookings/"+bookingid,{
-                        quantity:this.quantity,
+                    .post("http://127.0.0.1:1430/user-api/bookings/edit/"+bookingid,{
+                        quantity:this.quantity
                     })
                     .then((response)=>response.data)
                     .then((response)=>{console.log(response)})

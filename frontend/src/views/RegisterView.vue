@@ -100,7 +100,7 @@ export default {
                 .catch((response)=>{
                     alert(response['message'])
                 })
-                location.href="/login"
+                this.$router.push("/login")
             }
         }
     }

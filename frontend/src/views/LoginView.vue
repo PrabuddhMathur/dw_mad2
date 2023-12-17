@@ -62,7 +62,7 @@ export default {
 				expiry: this.expiry,
 				};
 				localStorage.setItem("userSession", JSON.stringify(this.userSession));
-				location.href="/dashboard"
+				this.$router.push("/dashboard")
 				
 				})
 				.catch((response)=>{

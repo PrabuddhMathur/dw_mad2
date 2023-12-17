@@ -15,7 +15,7 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                        <button @click="addCategoryRequest()" class="btn btn-primary">Submit Request</button>
+                        <button @click="addCategoryRequest()" class="btn btn-primary" data-bs-dismiss="modal">Submit Request</button>
                     </div>
                 </form>
             </div>
@@ -27,11 +27,14 @@ import axios from 'axios';
     export default {
         data(){
             return {
+                userSession: JSON.parse(localStorage.getItem("userSession")) || null,
                 cname:"",
             }
         },
         methods:{
             async addCategoryRequest(){
+                if (this.userSession){
+                    axios.defaults.headers.common["Authorization"] = `Bearer ${this.userSession.token}`;
                 await axios
                 .post("http://127.0.0.1:1430/manager-api/approval/category",{
                     request_type:"Add",
@@ -39,6 +42,7 @@ import axios from 'axios';
                 })
                 .then((response)=>response.data)
                 .then((response)=>{alert(response)})
+                }else{alert("Please login and try again!")}
             }
         }
     }

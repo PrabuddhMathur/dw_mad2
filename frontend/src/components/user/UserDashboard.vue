@@ -3,49 +3,41 @@
         <Navbar />
         <div class="text-center my-4" >
             <button class="btn btn-dark" style="margin-left: 5px" data-bs-toggle="modal" data-bs-target="#SearchCategoryModal">Search Category</button>
-            <!-- Search Category Modal -->
             <SearchCategoryModal :categories=categories />
             <button class="btn btn-dark" style="margin-left: 5px" data-bs-toggle="modal" data-bs-target="#SearchProductModal">Search Product</button>
-            <!-- Search Product Modal -->
             <SearchProductModal :products=products />
         </div>
-        <!-- {% for category in categories %} -->
-        <div v-for="category in categories" :key="category.cid">
+        <template v-if="categories.length > 0">
+            <div v-for="category in categories" :key="category.cid">
+                <div class="container mb-4">
+                    <div class="row">
+                        <h5 class="col-3" style="margin-top: 6px; font-family: 'Bangers';font-size: 28px;">{{ category.cname }}</h5>
+                    </div>
+                    <hr>
+                    <div v-if="category.products.length>0" class="row row-cols-2 row-cols-md-3 row-cols-lg-5  g-4">
+                        <div v-for="product in category.products" :key="product.pid" class="col">
+                            <div class="card h-100">
+                            <div class="card-body">
+                                <h5 class="card-title">{{ product.pname }}</h5>
+                                Quantity: {{ product.quantity }} <br>
+                                Rate: Rs. {{ product.rateperunit }}/{{ product.unit }}
+                            </div>
+                            <div class="card-footer d-flex justify-content-center">
+                                <button v-if="product.quantity>0" class="btn btn-outline-dark btn-sm mx-2" type="button" data-bs-toggle="modal" :data-bs-target="'#'+product.pid+'AddToCartModal'"><i class="fa-solid fa-cart-plus"></i></button>
+                                <button v-else class="btn btn-outline-dark btn-sm mx-2 " type="button" disabled>Out Of Stock</button>
+                                <AddToCartModal :category_name=category.cname :product="product" />
 
-            <div class="container mb-4">
-                <div class="row">
-                    <h5 class="col-3" style="margin-top: 6px; font-family: 'Bangers';font-size: 28px;">{{ category.cname }}</h5>
+                            </div>                
+                            </div> 
+                        </div>           
+                    </div>
+                    <h6 v-else>No items here yet.</h6>
                 </div>
-                <hr>
-                <!-- {% if category['products']|length > 0 %} -->
-                <div v-if="category.products.length>0" class="row row-cols-2 row-cols-md-3 row-cols-lg-5  g-4">
-                    <!-- loop for products in specific category -->
-                    <!-- {% for product in category['products'] %}             -->
-                    <div v-for="product in category.products" :key="product.pid" class="col">
-                        <div class="card h-100">
-                        <div class="card-body">
-                            <h5 class="card-title">{{ product.pname }}</h5>
-                            Quantity: {{ product.quantity }} <br>
-                            Rate: Rs. {{ product.rateperunit }}/{{ product.unit }}
-                        </div>
-                        <div class="card-footer d-flex justify-content-center">
-                            <button v-if="product.quantity>0" class="btn btn-outline-dark btn-sm mx-2" type="button" data-bs-toggle="modal" :data-bs-target="'#'+product.pid+'AddToCartModal'"><i class="fa-solid fa-cart-plus"></i></button>
-                            <button v-else class="btn btn-outline-dark btn-sm mx-2 " type="button" disabled>Out Of Stock</button>
-                            <!-- AddToCartModal -->
-                            <AddToCartModal :category_name=category.cname :product="product" />
-
-                        </div>                
-                        </div> 
-                    </div>           
-                    <!-- {% endfor %} -->
-                </div>
-                <!-- {% else %} -->
-                <h6 v-else>No items here yet.</h6>
-                <!-- {% endif %} -->
             </div>
-
+        </template>
+         <div v-else class="container mb-4">
+            <h6>No categories available. Please visit later.</h6>
         </div>
-
     </div>
 </template>
 <script>

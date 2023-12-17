@@ -33,7 +33,6 @@ const router = createRouter({
             .then((response)=>{
 
               const role=response['role'];
-
               if (role === 'admin') {
                 // console.log("Loading AdminDashboard.vue");
                 import('../components/admin/AdminDashboard.vue').then(module => {

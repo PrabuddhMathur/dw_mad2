@@ -28,7 +28,7 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                        <button type="submit" class="btn btn-primary">Submit</button>
+                        <button type="submit" class="btn btn-primary" data-bs-dismiss="modal">Submit</button>
                     </div>
                 </form>
             </div>
@@ -74,7 +74,7 @@ import axios from 'axios';
                     })
                     .then((response)=>response.data)
                     .then((response)=>{console.log(response)})
-                    location.href="/cart"
+                    this.$router.push("/cart")
                 }else{
                     alert("Please login and try again!")
                 }
