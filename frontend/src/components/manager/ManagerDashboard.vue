@@ -59,7 +59,6 @@ import AddCategoryModal from './modals/AddCategoryModal.vue';
 import EditCategoryModal from './modals/EditCategoryModal.vue';
 import axios from "axios";
 
-
 export default {
     components: {
         Navbar,
@@ -85,7 +84,7 @@ export default {
                 .then((results) => {
                     this.categories = results;
                 })
-                .catch(()=>{
+                .catch((error)=>{
                     console.error("Category error: ", error)
                 });
             }else{alert("Please login and try again!")}
@@ -110,10 +109,8 @@ export default {
             .delete("http://127.0.0.1:1430/manager-api/product/"+pid)
             .then((response)=>response)
             .then((response)=>response.data)
-            .then((results)=>{
-                // this.categories = this.categories.filter(category => category.cid !== cid);
-                console.log(results)
-                })
+            .then((results)=>{console.log(results)})
+            location.href="/dashboard"
             }else{alert("Please login and try again!")}
         },
         async exportDetails(cid){

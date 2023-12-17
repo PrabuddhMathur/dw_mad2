@@ -19,6 +19,39 @@ class User(db.Model):
             "username":self.username,
         }
 
+
+
+class ApproveCategory(db.Model):
+    __tablename__ = "approvecategories"
+    id = db.Column(db.Integer, primary_key = True)
+    category_id = db.Column(db.Integer, db.ForeignKey("categories.cid", ondelete = "CASCADE"))
+    cname = db.Column(db.String(150))
+    updated_cname=db.Column(db.String(150))
+    request_type=db.Column(db.String(150))
+    manager_id=db.Column(db.String(150))
+
+    def to_dict(self):
+        return {
+            "id":self.id,
+            "category_id":self.category_id,
+            "cname":self.cname,
+            "updated_cname":self.updated_cname,
+            "request_type":self.request_type,
+            "manager_id":self.manager_id
+        }
+   
+class Category(db.Model):
+    __tablename__ = "categories"
+    cid = db.Column(db.Integer, primary_key = True)
+    cname = db.Column(db.String(150), unique=True)
+    products = db.relationship("Product", backref = "category", cascade = "all, delete", passive_deletes = True)
+    
+    def to_dict(self):
+        return {
+            "cid":self.cid,
+            "cname":self.cname,
+            "products":[product.to_dict() for product in self.products]
+        }
 class Product(db.Model):
     __tablename__ = "products"
     pid = db.Column(db.Integer, primary_key = True)
@@ -54,39 +87,6 @@ class Product(db.Model):
             "cname":cname,
             "bookings":[booking.to_dict() for booking in self.bookings]
         }
-
-class ApproveCategory(db.Model):
-    __tablename__ = "approvecategories"
-    id = db.Column(db.Integer, primary_key = True)
-    category_id = db.Column(db.Integer, db.ForeignKey("categories.cid", ondelete = "CASCADE"))
-    cname = db.Column(db.String(150))
-    updated_cname=db.Column(db.String(150))
-    request_type=db.Column(db.String(150))
-    manager_id=db.Column(db.String(150))
-
-    def to_dict(self):
-        return {
-            "id":self.id,
-            "category_id":self.category_id,
-            "cname":self.cname,
-            "updated_cname":self.updated_cname,
-            "request_type":self.request_type,
-            "manager_id":self.manager_id
-        }
-   
-class Category(db.Model):
-    __tablename__ = "categories"
-    cid = db.Column(db.Integer, primary_key = True)
-    cname = db.Column(db.String(150), unique=True)
-    products = db.relationship("Product", backref = "category", cascade = "all, delete", passive_deletes = True)
-    
-    def to_dict(self):
-        return {
-            "cid":self.cid,
-            "cname":self.cname,
-            "products":[product.to_dict() for product in self.products]
-        }
-
 
 class Booking(db.Model):
     bookingid = db.Column(db.Integer, primary_key=True)

@@ -8,7 +8,11 @@ from application import tasks
 import matplotlib
 import matplotlib.pyplot as plt
 from matplotlib.ticker import MaxNLocator
+from sqlalchemy import exc
 matplotlib.use("Agg")
+class DatesUnaligned(Exception):
+    pass
+
 @app.route("/api/categories", methods = ["GET", "POST"])
 def getCategories():
     if request.method == "GET":
@@ -29,10 +33,15 @@ def getCategories():
                 data = request.get_json()
                 cname = data["cname"]
                 new_category=Category(cname=cname)
-                db.session.add(new_category)
-                db.session.commit()
-                cache.clear()
-                return f"Addition of {new_category.cname} successful!"
+                try:
+                    db.session.add(new_category)
+                    db.session.commit()
+                    cache.clear()
+                    return f"Addition of {new_category.cname} successful!"
+                except exc.IntegrityError as e:
+                    db.session.rollback()
+                    cache.clear()
+                    return '{"error":"Category already exists!"}'
             else:
                 return "User operation not allowed"
         else:
@@ -52,9 +61,14 @@ def getCategory(cid):
                 data = request.get_json()
                 new_cname=data["cname"]
                 new_category.cname=new_cname
-                db.session.commit()
-                cache.clear()
-                return f"Updation for {new_category.cname} successful!"
+                try:
+                    db.session.commit()
+                    cache.clear()
+                    return f"Updation for {new_category.cname} successful!"
+                except exc.IntegrityError as e:
+                    db.session.rollback()
+                    cache.clear()
+                    return '{"error":"Category already exists!"}'
             else:
                 return "User operation not allowed"
         else:
@@ -277,7 +291,8 @@ def approvalid_approved(approval_id):
                     return f"Addition request for {category.cname} category approved!"
                 elif category.request_type=="Update":
                     updated_category=get_category_by_id(category.category_id)
-                    updated_category.cname = category.cname
+                    updated_category.cname = category.updated_cname
+                    db.session.commit()
                     db.session.delete(category)
                     db.session.commit()
                     cache.clear()
@@ -366,11 +381,28 @@ def product_add():
                 unit = data["unit"]
                 rateperunit = data["rateperunit"]
                 quantity = data["quantity"]
+
                 new_product=Product(category_id=category_id, pname=pname, manf_date=manf_date, exp_date=exp_date, unit=unit, rateperunit=rateperunit, quantity=quantity)
-                db.session.add(new_product)
-                db.session.commit()
-                cache.clear()
-                return f"Addition of {new_product.cname} successful!"
+                
+                try:
+                    if manf_date>datetime.datetime.now() or exp_date<datetime.datetime.now():
+                        raise DatesUnaligned
+                    db.session.add(new_product)
+                    db.session.commit()
+                    cache.clear()
+                    return f"Addition of {new_product.pname} successful!"
+                except DatesUnaligned:
+                    db.session.rollback()
+                    cache.clear()
+                    return '{"error":"Manufacture and Expiry dates not aligned"}'
+                except ValueError:
+                    db.session.rollback()
+                    cache.clear()
+                    return '{"error":"Invalid values entered."}'
+                except exc.IntegrityError:
+                    db.session.rollback()
+                    cache.clear()
+                    return '{"error":"Product already exists or invalid value entered! Try Again!"}'
             else:
                 return "User operation not allowed"
         else:
@@ -394,9 +426,24 @@ def product_op(pid):
                 new_product.unit=data["unit"]
                 new_product.rateperunit=data["rateperunit"]
                 new_product.quantity=data["quantity"]
-                db.session.commit()
-                cache.clear()
-                return f"Updation for {new_product.pname} successful!"
+                try:
+                    if new_product.manf_date>datetime.datetime.now() or new_product.exp_date<datetime.datetime.now():
+                        raise DatesUnaligned
+                    db.session.commit()
+                    cache.clear()
+                    return f"Updation of {new_product.pname} successful!"
+                except DatesUnaligned:
+                    db.session.rollback()
+                    cache.clear()
+                    return '{"error":"Manufacture and Expiry dates not aligned"}'
+                except ValueError:
+                    db.session.rollback()
+                    cache.clear()
+                    return '{"error":"Invalid values entered."}'
+                except exc.IntegrityError:
+                    db.session.rollback()
+                    cache.clear()
+                    return '{"error":"Product already exists or invalid value entered! Try Again!"}'
             else:
                 return "User operation not allowed"
         else:

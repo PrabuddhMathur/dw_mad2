@@ -6,7 +6,7 @@
                     <h1 class="modal-title fs-5">Add To Cart: {{ product.pname }}</h1>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <form @submit.prevent="submitForm">
+                <form @submit.prevent="addtoCart(product.pid)">
                     <div class="modal-body">
                         <div class="form-floating mb-3">
                             <input type="text" class="form-control" value='In Stock' id="Availability" readonly>
@@ -28,7 +28,7 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                        <button type="submit" class="btn btn-primary" data-bs-dismiss="modal">Submit</button>
+                        <button type="submit" class="btn btn-primary">Submit</button>
                     </div>
                 </form>
             </div>
@@ -55,13 +55,6 @@ import axios from 'axios';
             }
         },
         methods:{
-            submitForm() {
-                if (this.quantity < 1 || this.quantity > this.product.quantity) {
-                    alert('Invalid quantity. Please enter a quantity within the allowed range.');
-                    return;
-                }
-                this.addtoCart(this.product.pid);
-            },
             async addtoCart(pid){
                 if (this.userSession){
                     axios.defaults.headers.common["Authorization"] = `Bearer ${this.userSession.token}`;
@@ -74,11 +67,11 @@ import axios from 'axios';
                     })
                     .then((response)=>response.data)
                     .then((response)=>{console.log(response)})
-                    this.$router.push("/cart")
+                    location.href="/cart"
                 }else{
                     alert("Please login and try again!")
                 }
             }
         }
-}
+    }
 </script>

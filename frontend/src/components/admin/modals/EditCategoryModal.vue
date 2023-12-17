@@ -6,7 +6,7 @@
                     <h1 class="modal-title fs-5">Edit Category</h1>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <form >
+                <form @submit.prevent="editCategory(category.cid)">
                     <div class="modal-body">
                         <div class="form-floating mb-3">
                             <input v-model="updated_cname" name="CategoryName" type="text" class="form-control" placeholder="For Eg.: Spices" required>
@@ -15,7 +15,7 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                        <button @click="editCategory(category.cid)" type="submit" class="btn btn-primary" data-bs-dismiss="modal">Save changes</button>
+                        <button type="submit" class="btn btn-primary">Save changes</button>
                     </div>
                 </form>
             </div>
@@ -46,7 +46,13 @@ import axios from 'axios';
                         cname:this.updated_cname
                     })
                     .then((response)=>response.data)
-                    .then((response)=>{console.log(response)})
+                    .then((response)=>{
+                    if (response && response.hasOwnProperty('error')){
+                        alert(response['error'])
+                    }else{
+                        location.href="/dashboard"
+                    }
+                })
                 }else{alert("Please login and try again!")}
             }
         }

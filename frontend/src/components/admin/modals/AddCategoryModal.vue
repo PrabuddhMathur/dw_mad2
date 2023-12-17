@@ -6,7 +6,7 @@
                     <h1 class="modal-title fs-5">Add Category</h1>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <form>
+                <form @submit.prevent="addCategory()">
                     <div class="modal-body">
                         <div class="form-floating mb-3">
                             <input v-model="cname" name="CategoryName" type="text" class="form-control" id="CategoryName" placeholder="For Eg.: Spices" required>
@@ -15,7 +15,7 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                        <button @click="addCategory()" type="submit" class="btn btn-primary" data-bs-dismiss="modal">Submit</button>
+                        <button type="submit" class="btn btn-primary">Submit</button>
                     </div>
                 </form>
             </div>
@@ -40,7 +40,13 @@ import axios from 'axios';
                         cname:this.cname
                     })
                     .then((response)=>response.data)
-                    .then((response)=>{console.log(response)})
+                    .then((response)=>{
+                    if (response && response.hasOwnProperty('error')){
+                        alert(response['error'])
+                    }else{
+                        location.href="/dashboard"
+                    }
+                })
                 }else{alert("Please login and try again!")}
             }
         }

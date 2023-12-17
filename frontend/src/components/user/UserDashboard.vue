@@ -87,7 +87,7 @@ export default {
                     .then((results) => {
                         this.products = results;
                     })
-                    .catch(()=>{
+                    .catch((error)=>{
                         console.error("Product error: ", error)
                     });
             }else{alert("Please login and try again!")}

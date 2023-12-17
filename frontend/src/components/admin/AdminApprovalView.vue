@@ -209,7 +209,7 @@ export default {
                 .then((results)=>{
                         this.categories = this.categories.filter(category => category.id !== approval_id);
                         console.log(results)
-                    })
+                })
                 }else{alert("Please login and try again!")}
         }
     },

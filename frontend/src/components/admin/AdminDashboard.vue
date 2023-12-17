@@ -46,7 +46,6 @@ import AddCategoryModal from './modals/AddCategoryModal.vue';
 import EditCategoryModal from './modals/EditCategoryModal.vue';
 import axios from "axios";
 
-
 export default {
     components: {
         Navbar,

@@ -124,8 +124,8 @@ export default {
                     .then((response) => response.data)
                     .then((results) => {
                         console.log(results);
-                        // this.bookings = this.bookings.filter(booking => booking.bookingid !== bookingid);
-                        location.href="/cart"
+                        this.bookings = this.bookings.filter(booking => booking.bookingid !== bookingid);
+                        this.getTotal()
                     })
             }else{alert("Please login and try again!")}
         },
@@ -153,7 +153,7 @@ export default {
         this.getTotal(); 
     },
     mounted(){
-        document.title="Cart"
+        document.title="User Cart"
     },
 }
 </script>

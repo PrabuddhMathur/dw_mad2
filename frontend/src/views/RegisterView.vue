@@ -2,8 +2,8 @@
     <div>
         <div class="container-fluid">
         <div class="row">        
-            <div class="col-6 d-flex justify-content-start"></div>      
-            <div class="col-5 d-flex justify-content-end">                
+            <!-- <div class="col-6 d-flex justify-content-start"></div>       -->
+            <div class="col-12 d-flex justify-content-center">                
                 <form @submit.prevent="register" style="margin-top: 50px;">
                     <h1 class="text-center mb-4" style="font-family: 'Bagel Fat One'; color: #D81159;">Welcome to Grocilla!</h1>
                     <h2 class="text-center">Sign Up!</h2>
