@@ -63,8 +63,6 @@ const router = createRouter({
           console.log("No session or role, redirecting to login");
           next('/login');
         }
-
-        
       }      
     },
     {
@@ -113,7 +111,7 @@ const router = createRouter({
         localStorage.removeItem("userSession");
         next('/login');
       }
-    }
+    },
   ]
 })
 

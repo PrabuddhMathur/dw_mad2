@@ -31,7 +31,7 @@ def monthly_report():
     msg = MIMEMultipart()
     msg["From"] = SENDER_ADDRESS
     msg["To"] = "admin@grocilla.com"
-    msg["Subject"] = "Admin Monthly Report"
+    msg["Subject"] = "Admin Report"
     template = render_template("monthly_report.html")
     msg.attach(MIMEText(template, "html"))
 

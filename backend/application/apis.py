@@ -5,7 +5,10 @@ from passlib.hash import pbkdf2_sha256 as passhash
 from application.cache import cache
 import jwt, secrets,datetime
 from application import tasks
-
+import matplotlib
+import matplotlib.pyplot as plt
+from matplotlib.ticker import MaxNLocator
+matplotlib.use("Agg")
 @app.route("/api/categories", methods = ["GET", "POST"])
 def getCategories():
     if request.method == "GET":
@@ -628,3 +631,42 @@ def export_category(cid):
             return "User not authorized"
     else:
         return "Invalid HTTP Request"
+
+@app.route("/admin-api/summary")
+def admin_summary():
+    if request.method=="GET":
+        token=request.headers.get("Authorization", "").split(" ")[-1]
+        if token:
+            decodedToken=jwt.decode(token,app.secret_key,algorithms=["HS256"])
+            user_id=get_user_id_by_token(decodedToken['token'])
+            if user_id==1:
+                dict = {}
+                    
+                cat_list = Category.query.distinct(Category.cname).all()
+
+                for cat in cat_list:
+                    products = Product.query.filter_by(category_id=cat.cid)
+                    count = products.count()
+                    dict.update({cat.cname : count})
+                
+                categories = list(dict.keys())
+                product_count = list(dict.values())
+                fig = plt.figure(figsize = (10, 5)).gca()
+                fig.yaxis.set_major_locator(MaxNLocator(integer=True))
+
+                # creating the bar plot
+                plt.bar(categories, product_count, color ='maroon', width = 0.4)
+                plt.xlabel("Categories", fontsize=12, labelpad=20)
+                plt.ylabel("No. of Products", fontsize=12, labelpad=20)
+                plt.title("Category-wise product distribution", fontsize=16, pad=20)
+                plt.tight_layout()
+                plt.savefig("backend/static/graph.png")
+                tasks.monthly_report.delay()
+                return "Admin summary successfully generated and emailed to you."
+            else:
+                return "User operation not allowed"
+        else:
+            return "User not authorized"
+    else:
+        return "Invalid HTTP Request"
+            
